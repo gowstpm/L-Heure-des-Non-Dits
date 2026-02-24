@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L'Heure des Non-Dits - Cash & Vulgaire</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Poppins:wght@300;400;500;600&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0a0212 0%, #1e0533 100%);
+            color: #f3e8ff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        h1 { font-family: 'Playfair Display', serif; }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1rem;
+        }
+
+        .radio-label input[type="radio"], .check-label input[type="checkbox"] { display: none; }
+        .radio-label, .check-label { cursor: pointer; transition: all 0.2s ease; }
+        .radio-label span, .check-label span {
+            display: block;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            font-size: 0.85rem;
+        }
+        .radio-label input[type="radio"]:checked + span, .check-label input[type="checkbox"]:checked + span {
+            background: #9d174d;
+            border-color: #f472b6;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 0 15px rgba(157, 23, 77, 0.4);
+        }
+
+        textarea, input[type="text"], input[type="email"], input[type="number"] {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        #consentOverlay {
+            display: flex;
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        .modal-container {
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #ef4444;
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- Écran de Bienvenue / Consentement / Profil -->
+    <div id="consentOverlay">
+        <div class="max-w-md w-full glass-card p-8 border-red-600 text-center mx-4 my-8">
+            <h2 class="text-2xl font-bold text-red-600 mb-4 uppercase tracking-widest">Accès Restreint</h2>
+            <p class="text-xs text-gray-400 mb-6 uppercase tracking-tighter italic">L'Heure des Non-Dits — Étude de Comportement</p>
+            
+            <div class="space-y-6 text-left">
+                <!-- Sexe -->
+                <div>
+                    <p class="text-sm font-semibold text-gray-300 mb-2">Votre Sexe :</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label class="radio-label">
+                            <input type="radio" name="userGender" value="Homme" onchange="checkFullConsent()">
+                            <span>Homme</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="userGender" value="Femme" onchange="checkFullConsent()">
+                            <span>Femme</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="userGender" value="Autre" onchange="checkFullConsent()">
+                            <span>Autre</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Âge -->
+                <label class="flex items-center space-x-3 cursor-pointer group">
+                    <div class="relative">
+                        <input type="checkbox" id="ageCheckbox" class="peer hidden" onchange="checkFullConsent()">
+                        <div class="w-6 h-6 border-2 border-red-900 rounded bg-black peer-checked:bg-red-600 peer-checked:border-red-400 transition-all"></div>
+                        <i class="fas fa-check absolute top-1 left-1 text-xs text-white opacity-0 peer-checked:opacity-100"></i>
+                    </div>
+                    <span class="text-xs text-gray-400 group-hover:text-white transition-colors uppercase font-bold">Je certifie avoir plus de 18 ans.</span>
+                </label>
+
+                <!-- RGPD -->
+                <label class="flex items-start space-x-3 cursor-pointer group">
+                    <div class="relative mt-1">
+                        <input type="checkbox" id="consentCheckbox" class="peer hidden" onchange="checkFullConsent()">
+                        <div class="w-6 h-6 border-2 border-red-900 rounded bg-black peer-checked:bg-red-600 peer-checked:border-red-400 transition-all"></div>
+                        <i class="fas fa-check absolute top-1 left-1 text-xs text-white opacity-0 peer-checked:opacity-100"></i>
+                    </div>
+                    <span class="text-[10px] text-gray-400 group-hover:text-white transition-colors leading-tight">J'accepte que mes réponses soient collectées de manière anonyme pour des études statistiques sur les comportements sexuels.</span>
+                </label>
+            </div>
+
+            <button onclick="acceptConsent()" id="enterBtn" disabled class="w-full mt-8 py-4 bg-zinc-900 text-zinc-600 font-bold rounded-lg uppercase tracking-widest transition-all">
+                Entrer dans L'Heure des Non-Dits
+            </button>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-red-600 uppercase tracking-tighter">
+                L'Heure des Non-Dits
+            </h1>
+            <p class="text-red-200 opacity-60 italic">Réponds avec une honnêteté brutale.</p>
+        </header>
+
+        <form id="quizForm" class="space-y-6 pb-20">
+            <div class="glass-card p-6 border border-red-900/30">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" id="userName" required class="p-3 rounded-lg focus:ring-2 focus:ring-red-600 outline-none" placeholder="Ton Prénom">
+                    <input type="email" id="partnerEmail" required class="p-3 rounded-lg focus:ring-2 focus:ring-red-600 outline-none" placeholder="Email de ton/ta partenaire">
+                </div>
+            </div>
+
+            <div id="questionsContainer" class="space-y-6"></div>
+
+            <div class="text-center mt-10">
+                <button type="submit" class="bg-red-800 hover:bg-red-700 text-white font-bold py-5 px-14 rounded-full transition-all shadow-[0_0_30px_rgba(153,27,27,0.4)] uppercase">
+                    Valider mes réponses
+                </button>
+            </div>
+        </form>
+
+        <div id="resultsSection" class="hidden glass-card p-10 text-center">
+            <h2 class="text-3xl font-bold text-red-600 mb-4 uppercase">Le dossier est prêt</h2>
+            <p class="mb-8 text-gray-300 italic">Tes vérités sont enregistrées. Prêt(e) à ce qu'il/elle lise tout ça ?</p>
+            <div class="flex flex-col gap-4 max-w-sm mx-auto">
+                <button onclick="sendViaMailto()" class="bg-red-700 p-5 rounded-full text-white font-bold hover:bg-red-600 transition-all shadow-lg uppercase tracking-widest">
+                    <i class="fas fa-envelope mr-2"></i> Envoyer le rapport
+                </button>
+                <p class="text-[10px] text-zinc-500">Note : Une copie sera envoyée à kilianjunker94@gmail.com.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="envisageableModal" class="modal-overlay">
+        <div class="bg-black border border-red-600 p-8 rounded-2xl max-w-sm w-full text-center shadow-[0_0_50px_rgba(220,38,38,0.5)]">
+            <h3 class="text-xl font-bold text-red-500 mb-4 uppercase">C'est envisageable ?</h3>
+            <p class="text-gray-400 mb-6 italic" id="modalContext"></p>
+            <div class="flex gap-4 justify-center">
+                <button onclick="handleModalResponse('Oui, pourquoi pas')" class="bg-red-700 px-6 py-2 rounded font-bold hover:bg-red-600">OUI</button>
+                <button onclick="handleModalResponse('Non, jamais')" class="bg-zinc-800 px-6 py-2 rounded font-bold hover:bg-zinc-700">NON</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="followUpModal" class="modal-overlay">
+        <div class="bg-black border border-red-600 p-8 rounded-2xl modal-container max-w-2xl w-full text-center shadow-[0_0_50px_rgba(220,38,38,0.5)] m-4">
+            <h3 class="text-xl font-bold text-red-500 mb-4 uppercase tracking-wider" id="followUpTitle">Précise un peu...</h3>
+            <div id="followUpContent" class="mb-6"></div>
+            <button onclick="closeFollowUp()" id="followUpSubmitBtn" class="bg-red-700 px-10 py-3 rounded-full font-bold hover:bg-red-600 transition-all uppercase tracking-widest text-sm">VALIDER</button>
+        </div>
+    </div>
+
+    <script>
+        // Gestion du consentement et du profil
+        const ageCheckbox = document.getElementById('ageCheckbox');
+        const consentCheckbox = document.getElementById('consentCheckbox');
+        const enterBtn = document.getElementById('enterBtn');
+        let userGender = "";
+
+        function checkFullConsent() {
+            userGender = document.querySelector('input[name="userGender"]:checked')?.value;
+            const isAdult = ageCheckbox.checked;
+            const isConsented = consentCheckbox.checked;
+
+            if (userGender && isAdult && isConsented) {
+                enterBtn.disabled = false;
+                enterBtn.classList.remove('bg-zinc-900', 'text-zinc-600');
+                enterBtn.classList.add('bg-red-600', 'text-white', 'hover:bg-red-500');
+            } else {
+                enterBtn.disabled = true;
+                enterBtn.classList.add('bg-zinc-900', 'text-zinc-600');
+                enterBtn.classList.remove('bg-red-600', 'text-white', 'hover:bg-red-500');
+            }
+        }
+
+        function acceptConsent() {
+            document.getElementById('consentOverlay').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        const questions = [
+            { id: 'q1', type: 'scale', text: "As-tu déjà utilisé le pied de ton/ta partenaire dans une baise ?" },
+            { id: 'q2', type: 'scale', text: "T'es-tu déjà envoyé(e) dans des chiottes, un parking ou tous types de lieux publics ?" },
+            { id: 'q3', type: 'scale', text: "As-tu déjà léché une boisson ou de la bouffe comme un ogre sur l'entrejambe de l'autre ?" },
+            { id: 'q4', type: 'scale', text: "As-tu déjà craché sur la sale tête de ton/ta partenaire ?", hasFollowUp: 'crachat' },
+            { id: 'q5', type: 'scale', text: "As-tu déjà filmé une baise ?" },
+            { id: 'q6', type: 'scale', text: "As-tu déjà utilisé un gode ou un gros vibro pendant ?" },
+            { id: 'q7', type: 'scale', text: "As-tu déjà baisé sauvagement pendant que tes darons ou tes potes étaient dans le même lieu ?" },
+            { id: 'q8', type: 'scale', text: "As-tu déjà tenté de forcer le passage dans le cul sans lubrifiant, en mode barbare ?" },
+            { id: 'q9', type: 'scale', text: "T'es-tu déjà fait ligoter comme une bête ?" },
+            { id: 'q10', type: 'scale', text: "As-tu déjà kiffé recevoir des gifles/bifles pendant la baise ?" },
+            { id: 'q11', type: 'scale', text: "As-tu déjà pris ou causé des vraies fessées ?", hasFollowUp: 'fessées' },
+            { id: 'q12', type: 'scale', text: "As-tu déjà torturé ton/ta partenaire ?", hasFollowUp: 'torture' },
+            { id: 'q13', type: 'scale', text: "As-tu déjà baisé comme un porc sur un balcon en espérant être vu par autrui ?" },
+            { id: 'q14', type: 'scale', text: "As-tu déjà bandé/mouillé en imaginant ton/ta partenaire baiser avec un/une autre ?" },
+            { id: 'q15', type: 'scale', text: "As-tu déjà voulu te taper un plan à trois (ou plus) avec une/un totale inconnue ?", hasFollowUp: 'plan_trois' },
+            { id: 'section_beuteu', type: 'checklist', text: "Lieux de pénétration déjà testés :", options: ["Vagin", "Anus", "Bouche", "Hand", "Seins", "Cuisses", "Pieds", "Aisselles", "Oreille", "Nombril"] },
+            { id: 'q16', type: 'scale', text: "As-tu déjà eu envie d'être traité(e) comme une chienne / un esclave (collier, laisse, ordres) ?" },
+            { id: 'q17', type: 'scale', text: "As-tu déjà éjaculé sans prévenir comme un détraqué ? (Homme uniquement)"},
+            { id: 'q18', type: 'scale', text: "As-tu déjà voulu simuler un viol, avec de la vraie résistance et de la brutalité ?" },
+            { id: 'q19', type: 'scale', text: "As-tu déjà eu envie de te faire pisser dessus ou de m'arroser la gueule ?" },
+            { id: 'q20', type: 'binary', text: "La pisse ?", options: ["Répugnant", "Avec plaisir"], hasFollowUp: 'pisse_flow' },
+            { id: 'q21', type: 'binary', text: "La merde ?", options: ["Répugnant", "Avec plaisir"], hasFollowUp: 'merde_flow' },
+            { id: 'q22', type: 'scale', text: "As-tu déjà reçu/rentré une main entière/poing dans quelconque orifice ?", hasFollowUp: 'fist_flow' },
+            { id: 'q23', type: 'checklist', text: "Choses sorties de ton corps pendant l'acte :", options: ["Pet/Pet de fouf", "Vomi", "Pisse", "Sang", "Larmes", "Gros glaire", "Rien"] },
+            { id: 'q24', type: 'scale', text: "As-tu déjà avalé le jus de ton/ta partenaire ?" },
+            { id: 'q25', type: 'scale', text: "As-tu déjà voulu jouer à l'inceste (jeu de rôle) ?" },
+            { id: 'q26', type: 'scale', text: "As-tu déjà baisé dans un lieu sacré ?" },
+            { id: 'q27', type: 'binary', text: "Se droguer pour baiser ?", options: ["Chaud(e)", "À tester", "Déjà fait", "Hors de question"] },
+            { id: 'q28', type: 'scale', text: "As-tu déjà blessé ton/ta partenaire ?", hasFollowUp: 'blessure' },
+            { id: 'q29', type: 'range', text: "Durée moyenne de tes baises ?", rangeMin: 0, rangeMax: 60, unit: 'min', hasFollowUp: 'duree' },
+            { id: 'q30', type: 'range', text: "Satisfaction globale de ton/ta partenaire ?", rangeMin: 0, rangeMax: 100, unit: '%', hasFollowUp: 'satisfaction' }
+        ];
+
+        const scaleOptions = ["Oui, mais c'était nul", "Oui, et régulièrement", "Oui, une fois", "Non"];
+        const container = document.getElementById('questionsContainer');
+        let currentModalQuestionId = null;
+
+        // Génération des questions
+        questions.forEach((q, i) => {
+            const card = document.createElement('div');
+            card.className = "glass-card p-6 border-l-4 border-red-900 transition-all duration-300 hover:border-red-600";
+            let html = `<p class="text-lg font-bold mb-4 text-gray-100">${q.type === 'checklist' ? '✓' : i+1}. ${q.text}</p>`;
+
+            if (q.type === 'scale' || q.type === 'binary') {
+                const opts = q.type === 'binary' ? q.options : scaleOptions;
+                html += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-${opts.length} gap-2">`;
+                opts.forEach(opt => {
+                    html += `<label class="radio-label"><input type="radio" name="${q.id}" value="${opt}" required onchange="handleAnswerChange(this, '${q.id}', '${q.hasFollowUp || ''}')"><span>${opt}</span></label>`;
+                });
+                html += `</div><div id="envisageable_${q.id}" class="mt-2 text-[10px] text-red-500 font-bold uppercase tracking-widest italic"></div>`;
+            } else if (q.type === 'range') {
+                const min = q.rangeMin || 0; const max = q.rangeMax || 100;
+                const unit = q.unit || ''; const initial = Math.round((max + min) / 2);
+                html += `<div class="px-4"><input type="range" name="${q.id}" id="range_${q.id}" min="${min}" max="${max}" value="${initial}" oninput="updateRangeLabel('${q.id}', this.value, '${unit}')" onchange="checkRangeFollowUp('${q.id}', this.value, '${q.hasFollowUp || ''}')"><div class="flex justify-between mt-2 text-xs text-gray-500"><span>Min</span><span id="label_${q.id}" class="text-red-500 font-bold">${initial}${unit}</span><span>Max</span></div></div><div id="envisageable_${q.id}" class="mt-2 text-[10px] text-red-500 font-bold uppercase tracking-widest italic"></div>`;
+            } else if (q.type === 'checklist') {
+                html += `<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">`;
+                q.options.forEach(opt => {
+                    html += `<label class="check-label"><input type="checkbox" name="${q.id}" value="${opt}"><span>${opt}</span></label>`;
+                });
+                html += `</div>`;
+            }
+            card.innerHTML = html;
+            container.appendChild(card);
+        });
+
+        function updateRangeLabel(id, val, unit) {
+            let displayVal = val;
+            if (id === 'q29' && parseInt(val) === 60) displayVal = "60+";
+            document.getElementById(`label_${id}`).innerText = displayVal + unit;
+        }
+
+        function checkRangeFollowUp(id, val, followUpType) {
+            if (followUpType === 'duree' && parseInt(val) < 10) showFollowUp(id, 'duree_feedback');
+            else if (followUpType === 'satisfaction' && parseInt(val) < 50) showFollowUp(id, 'tromperie');
+        }
+
+        function handleAnswerChange(input, qId, followUpType) {
+            if (input.value === "Non" || input.value === "Répugnant" || input.value === "Hors de question") {
+                currentModalQuestionId = qId;
+                document.getElementById('modalContext').innerText = questions.find(q => q.id === qId).text;
+                document.getElementById('envisageableModal').style.display = 'flex';
+                document.getElementById(`envisageable_${qId}`).innerText = "";
+            } else if (followUpType) {
+                showFollowUp(qId, followUpType);
+            }
+        }
+
+        function showFollowUp(qId, type) {
+            const content = document.getElementById('followUpContent');
+            const title = document.getElementById('followUpTitle');
+            const submitBtn = document.getElementById('followUpSubmitBtn');
+            currentModalQuestionId = qId;
+            document.getElementById('followUpModal').style.display = 'flex';
+            submitBtn.onclick = () => closeFollowUp(type);
+
+            if (type === 'fessées') {
+                title.innerText = "C'était violent ?";
+                content.innerHTML = `<div class="grid grid-cols-2 gap-2"><label class="radio-label"><input type="radio" name="follow_${qId}" value="Avec marques"><span>OUI (marques)</span></label><label class="radio-label"><input type="radio" name="follow_${qId}" value="Juste pour chauffer"><span>NON (chauffer)</span></label></div>`;
+            } else if (type === 'torture') {
+                title.innerText = "Type de torture ?";
+                content.innerHTML = `<textarea id="tortureScale" class="w-full p-3 rounded bg-zinc-900 border border-red-900/50 text-white focus:outline-none" rows="3" placeholder="Précisez..."></textarea>`;
+            } else if (type === 'blessure') {
+                title.innerText = "L'intention ?";
+                content.innerHTML = `<div class="grid grid-cols-2 gap-2"><label class="radio-label"><input type="radio" name="follow_${qId}" value="Intentionnellement"><span>Voulu</span></label><label class="radio-label"><input type="radio" name="follow_${qId}" value="Accidentellement"><span>Accident</span></label></div>`;
+            } else if (type === 'crachat') {
+                title.innerText = "Quel liquide ?";
+                content.innerHTML = `<div class="grid grid-cols-3 gap-2"><label class="radio-label"><input type="radio" name="follow_${qId}" value="Bave"><span>Bave</span></label><label class="radio-label"><input type="radio" name="follow_${qId}" value="Sperme"><span>Sperme</span></label><label class="radio-label"><input type="radio" name="follow_${qId}" value="Les deux"><span>Les deux</span></label></div>`;
+            } else if (type === 'plan_trois') {
+                title.innerText = "Nombre ?";
+                content.innerHTML = `<input type="number" id="nbParticipants" class="w-24 p-2 text-center text-xl font-bold rounded bg-zinc-900 border border-red-900/50 text-white" min="3" value="3">`;
+            } else if (type === 'pisse_flow' || type === 'merde_flow') {
+                title.innerText = "Action ?";
+                content.innerHTML = `<div class="grid grid-cols-3 gap-2"><label class="radio-label"><input type="radio" name="mode_${qId}" value="Reçu"><span>Reçu</span></label><label class="radio-label"><input type="radio" name="mode_${qId}" value="Envoyé"><span>Donné</span></label><label class="radio-label"><input type="radio" name="mode_${qId}" value="Les deux"><span>Les deux</span></label></div>`;
+            } else if (type === 'fist_flow') {
+                title.innerText = "Orifice ?";
+                content.innerHTML = `<div class="grid grid-cols-2 gap-2"><label class="check-label"><input type="checkbox" name="fist_target_${qId}" value="Vaginal"><span>Vaginal</span></label><label class="check-label"><input type="checkbox" name="fist_target_${qId}" value="Anal"><span>Anal</span></label></div>`;
+            } else if (type === 'duree_feedback') {
+                title.innerText = "Pourquoi ?";
+                content.innerHTML = `<div class="grid grid-cols-1 gap-2"><label class="radio-label"><input type="radio" name="follow_${qId}" value="Par choix"><span>Par choix</span></label><label class="radio-label"><input type="radio" name="follow_${qId}" value="Involontaire"><span>Involontaire</span></label></div>`;
+            } else if (type === 'tromperie') {
+                title.innerText = "Avertissement";
+                content.innerHTML = `<p class="text-red-500 font-bold uppercase">Manque de satisfaction critique.</p>`;
+            }
+        }
+
+        function handleModalResponse(val) {
+            if (currentModalQuestionId) {
+                document.getElementById(`envisageable_${currentModalQuestionId}`).innerText = `[ENVISAGEABLE : ${val.toUpperCase()}]`;
+                document.getElementById('envisageableModal').style.display = 'none';
+            }
+        }
+
+        function closeFollowUp(type) {
+            const label = document.getElementById(`envisageable_${currentModalQuestionId}`);
+            if (type === 'crachat') {
+                let val = document.querySelector(`input[name="follow_${currentModalQuestionId}"]:checked`)?.value || "Bave";
+                label.innerText = `[LIQUIDE : ${val.toUpperCase()}]`;
+            } else if (type === 'plan_trois') {
+                const nb = document.getElementById('nbParticipants').value || 3;
+                label.innerText = `[NB MAX : ${nb}]`;
+            } else if (type === 'pisse_flow' || type === 'merde_flow') {
+                let val = document.querySelector(`input[name="mode_${currentModalQuestionId}"]:checked`)?.value || "Non précisé";
+                label.innerText = `[MODE : ${val.toUpperCase()}]`;
+            } else if (type === 'fist_flow') {
+                const t = Array.from(document.querySelectorAll(`input[name="fist_target_${currentModalQuestionId}"]:checked`)).map(el => el.value).join(', ');
+                label.innerText = `[ORIFICE : ${t || 'Aucun'}]`;
+            } else {
+                let val = document.querySelector(`input[name="follow_${currentModalQuestionId}"]:checked`)?.value || document.getElementById('tortureScale')?.value || "";
+                if (val) label.innerText = `[PRÉCISION : ${val.toUpperCase()}]`;
+            }
+            document.getElementById('followUpModal').style.display = 'none';
+        }
+
+        document.getElementById('quizForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            this.classList.add('hidden');
+            document.getElementById('resultsSection').classList.remove('hidden');
+            window.scrollTo(0,0);
+        });
+
+        function sendViaMailto() {
+            const name = document.getElementById('userName').value;
+            const partner = document.getElementById('partnerEmail').value;
+            const studyEmail = "kilianjunker94@gmail.com";
+            
+            let body = `RAPPORT D'ÉTUDE : L'HEURE DES NON-DITS\n`;
+            body += `==============================================\n`;
+            body += `PROFIL DU RÉPONDANT :\n`;
+            body += `- Prénom : ${name}\n`;
+            body += `- Sexe : ${userGender}\n`;
+            body += `- Âge : +18 ANS CONFIRMÉ\n`;
+            body += `- Consentement Data : VALIDE\n`;
+            body += `==============================================\n\n`;
+            
+            const form = document.getElementById('quizForm');
+            questions.forEach((q, i) => {
+                let ans = "";
+                if (q.type === 'checklist') {
+                    ans = Array.from(form.querySelectorAll(`input[name="${q.id}"]:checked`)).map(el => el.value).join(', ') || "Aucun";
+                } else if (q.type === 'range') {
+                    const v = form.querySelector(`input[name="${q.id}"]`).value;
+                    ans = (q.id === 'q29' && v === "60") ? "60+min" : v + (q.unit || "");
+                } else {
+                    ans = new FormData(form).get(q.id) || "N/A";
+                }
+                const env = document.getElementById(`envisageable_${q.id}`)?.innerText || "";
+                body += `${i+1}. ${q.text}\n   RÉPONSE: ${ans} ${env}\n\n`;
+            });
+
+            window.location.href = `mailto:${studyEmail}?cc=${partner}&subject=${encodeURIComponent("NON-DITS [" + userGender + "] : Dossier de " + name)}&body=${encodeURIComponent(body)}`;
+        }
+    </script>
+</body>
+</html>
