@@ -111,28 +111,11 @@
         <!-- Formspree integrated form: submit will POST to your form endpoint -->
         <form id="quizForm" action="https://formspree.io/f/mkovkzqq" method="POST" class="space-y-6 pb-20">
 
-            <!-- GDPR consent -->
-            <div class="glass-card p-6 border border-red-900/30">
-                <div class="grid grid-cols-1 gap-4">
-                    <label class="flex items-center gap-3">
-                        <input type="checkbox" id="rgpdConsent" name="rgpdConsent" required>
-                        <span>J'accepte le traitement de mes données personnelles conformément au RGPD.</span>
-                    </label>
-
-                    <!-- Confirmation d'age après le consentement RGPD -->
-                    <div class="flex items-center gap-4">
-                        <label class="flex items-center gap-2"><input type="radio" id="consentAgeYes" name="over18" value="yes" required><span>J'ai plus de 18 ans</span></label>
-                        <label class="flex items-center gap-2"><input type="radio" id="consentAgeNo" name="over18" value="no"><span>Je n'ai pas 18 ans</span></label>
-                    </div>
-
-                    <!-- Sexe -->
-                    <div class="flex items-center gap-4">
-                        <label class="flex items-center gap-2"><input type="radio" name="sexe" value="homme"><span>Homme</span></label>
-                        <label class="flex items-center gap-2"><input type="radio" name="sexe" value="femme"><span>Femme</span></label>
-                        <label class="flex items-center gap-2"><input type="radio" name="sexe" value="autre"><span>Autre / Préfère ne pas dire</span></label>
-                    </div>
-                </div>
-            </div>
+            <!-- Removed the visible RGPD / age / sexe block (replaced by arrival popups). -->
+            <!-- Hidden fields that will be filled by the popups -->
+            <input type="hidden" id="rgpdConsentHidden" name="rgpdConsent" value="no">
+            <input type="hidden" id="over18Hidden" name="over18" value="no">
+            <input type="hidden" id="sexeHidden" name="sexe" value="non_specifie">
 
             <div class="glass-card p-6 border border-red-900/30">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -144,7 +127,7 @@
             <div id="questionsContainer" class="space-y-6"></div>
 
             <div class="text-center mt-10">
-                <button type="submit" class="bg-red-800 hover:bg-red-700 text-white font-bold py-5 px-14 rounded-full transition-all shadow-[0_0_30px_rgba(153,27,27,0.4)] uppercase">Valider</button>
+                <button type="submit" id="submitButton" class="bg-red-800 hover:bg-red-700 text-white font-bold py-5 px-14 rounded-full transition-all shadow-[0_0_30px_rgba(153,27,27,0.4)] uppercase">Valider</button>
             </div>
 
             <!-- Hidden fields for Formspree (subject, cc). _cc may or may not be used depending on your Formspree plan. -->
@@ -160,7 +143,54 @@
         </div>
     </div>
 
-    <!-- Modals -->
+    <!-- Arrival modals: GDPR -> Age -> Sexe (chained) -->
+    <div id="gdprModal" class="modal-overlay">
+        <div class="bg-black border border-red-600 p-8 rounded-2xl max-w-md w-full text-center shadow-[0_0_50px_rgba(220,38,38,0.5)]">
+            <h3 class="text-xl font-bold text-red-500 mb-4">Consentement RGPD</h3>
+            <p class="text-gray-300 mb-6">En acceptant, tu autorises le traitement de tes données personnelles pour l'envoi de ce formulaire.</p>
+            <div class="flex gap-4 justify-center">
+                <button id="gdprAccept" class="bg-red-700 px-6 py-2 rounded font-bold hover:bg-red-600">J'accepte</button>
+                <button id="gdprDecline" class="bg-zinc-800 px-6 py-2 rounded font-bold hover:bg-zinc-700">Je refuse</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="ageModal" class="modal-overlay">
+        <div class="bg-black border border-red-600 p-8 rounded-2xl max-w-md w-full text-center shadow-[0_0_50px_rgba(220,38,38,0.5)]">
+            <h3 class="text-xl font-bold text-red-500 mb-4">Confirmation d'âge</h3>
+            <p class="text-gray-300 mb-6">Tu dois avoir plus de 18 ans pour continuer.</p>
+            <div class="flex gap-4 justify-center">
+                <button id="ageYes" class="bg-red-700 px-6 py-2 rounded font-bold hover:bg-red-600">J'ai plus de 18 ans</button>
+                <button id="ageNo" class="bg-zinc-800 px-6 py-2 rounded font-bold hover:bg-zinc-700">Je n'ai pas 18 ans</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="sexeModal" class="modal-overlay">
+    <div class="bg-black border border-red-600 p-8 rounded-2xl max-w-md w-full text-center shadow-[0_0_50px_rgba(220,38,38,0.5)]">
+        <h3 class="text-xl font-bold text-red-500 mb-4">Ton sexe (optionnel)</h3>
+        <p class="text-gray-300 mb-6">Choisis une option pour continuer.</p>
+
+        <div class="flex flex-col gap-4">
+            <button class="bg-red-700 px-6 py-2 rounded font-bold hover:bg-red-600"
+                onclick="setSexe('homme')">
+                Homme
+            </button>
+
+            <button class="bg-red-700 px-6 py-2 rounded font-bold hover:bg-red-600"
+                onclick="setSexe('femme')">
+                Femme
+            </button>
+
+            <button class="bg-zinc-800 px-6 py-2 rounded font-bold hover:bg-zinc-700"
+                onclick="setSexe('prefere_pas_dire')">
+                Autre / Préfère ne pas dire
+            </button>
+        </div>
+    </div>
+</div>
+
+    <!-- Existing modals for envisageable / followups kept as is -->
     <div id="envisageableModal" class="modal-overlay">
         <div class="bg-black border border-red-600 p-8 rounded-2xl max-w-sm w-full text-center shadow-[0_0_50px_rgba(220,38,38,0.5)]">
             <h3 class="text-xl font-bold text-red-500 mb-4">MAIS... c'est envisageable ??</h3>
@@ -181,6 +211,7 @@
     </div>
 
     <script>
+        // questions list unchanged; we'll generate "name" attributes automatically as readable slugs
         const questions = [
             { id: 'q1', type: 'scale', text: "As-tu déjà utiliser le pied de ton/ta partenaire dans une baise ?" },
             { id: 'q2', type: 'scale', text: "T'es-tu déjà envoyé dans des chiottes, un parking ou tous types de lieux public ?" },
@@ -194,7 +225,7 @@
             { id: 'q10', type: 'scale', text: "As-tu déjà kiffé recevoir des gifles/bifles de forrain pendant la baise ?" },
             { id: 'q11', type: 'scale', text: "As-tu déjà pris ou causé des vraies fessées ?", hasFollowUp: 'fessées' },
             { id: 'q12', type: 'scale', text: "As-tu déjà torturé ton/ta partenaire ?", hasFollowUp: 'torture' },
-            { id: 'q13', type: 'scale', text: "As-tu déjà baisé comme un porc sur un balcon en espérant être vu par autrui ?" },
+            { id: 'q13', type: 'scale', text: "As-tu déjà baisé comme un porc sur un balcony en espérant être vu par autrui ?" },
             { id: 'q14', type: 'scale', text: "As-tu déjà bandé/mouillé en imaginant ton/ta partenaire baiser avec un/une autre ?" },
             { id: 'q15', type: 'scale', text: "As-tu déjà voulu te taper un plan à trois (ou plus) avec une/un totale inconnue ?", hasFollowUp: 'plan_trois' },
             { id: 'section_beuteu', type: 'checklist', text: "Lieux de pénétration (cocher tout ce qui a déjà accueilli une beuteu dans vos baises) :", options: ["Vagin", "Anus", "Bouche", "Main", "Entre les seins", "Entre les cuisses", "Pieds", "Aisselles", "Oreille (sérieux ?)", "Nombril"] },
@@ -222,6 +253,15 @@
         let selectedPisseMode = null;
         let selectedMerdeMode = null;
 
+        // helper to convert question text to a readable slug for form field names
+        function slugify(text) {
+            return text.toString().toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove accents
+                .replace(/[^a-z0-9]+/g, '_')
+                .replace(/^_|_$/g, '')
+                .slice(0, 60);
+        }
+
         questions.forEach((q, i) => {
             const card = document.createElement('div');
             card.className = "glass-card p-6 border-l-4 border-red-900 transition-all duration-300 hover:border-red-600";
@@ -229,13 +269,17 @@
             const numberLabel = q.type === 'checklist' ? '<i class="fa-solid fa-check-double text-red-600 mr-2"></i>' : `${i+1}. `;
             let html = `<p class="text-lg font-bold mb-4 text-gray-100">${numberLabel}${q.text}</p>`;
 
+            // compute a friendly name for Formspree
+            const fieldName = slugify(q.text || q.id);
+
             if (q.type === 'scale' || q.type === 'binary') {
                 const opts = q.type === 'binary' ? q.options : scaleOptions;
                 html += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-${opts.length} gap-2">`;
                 opts.forEach(opt => {
+                    // name uses fieldName (readable slug) so Formspree shows it as keyword
                     html += `
                         <label class="radio-label">
-                            <input type="radio" name="${q.id}" value="${opt}" required onchange="handleAnswerChange(this, '${q.id}', '${q.hasFollowUp || ''}')">
+                            <input type="radio" name="${fieldName}" value="${opt}" required onchange="handleAnswerChange(this, '${q.id}', '${q.hasFollowUp || ''}')">
                             <span>${opt}</span>
                         </label>`;
                 });
@@ -248,7 +292,7 @@
                 
                 html += `
                 <div class="px-4">
-                    <input type="range" name="${q.id}" id="range_${q.id}" min="${min}" max="${max}" value="${initial}" oninput="updateRangeLabel('${q.id}', this.value, '${unit}')" onchange="checkRangeFollowUp('${q.id}', this.value, '${q.hasFollowUp || ''}')">
+                    <input type="range" name="${fieldName}" id="range_${q.id}" min="${min}" max="${max}" value="${initial}" oninput="updateRangeLabel('${q.id}', this.value, '${unit}')" onchange="checkRangeFollowUp('${q.id}', this.value, '${q.hasFollowUp || ''}')">
                     <div class="flex justify-between mt-2 text-sm text-gray-400">
                         <span>Min</span>
                         <span id="label_${q.id}" class="text-red-500 font-bold">${initial}${unit}</span>
@@ -260,7 +304,7 @@
                 q.options.forEach(opt => {
                     html += `
                         <label class="check-label">
-                            <input type="checkbox" name="${q.id}" value="${opt}">
+                            <input type="checkbox" name="${fieldName}" value="${opt}">
                             <span>${opt}</span>
                         </label>`;
                 });
@@ -409,7 +453,7 @@
                                 <h4 class="text-red-400 font-bold uppercase text-xs mb-3 border-b border-red-900/50 pb-1 text-center">En mode Reçu</h4>
                                 ${checkboxGroup(isPisse ? 'pisse_recu' : 'merde_recu')}
                             </div>
-                            <div class="flex-1 border-t md:border-t-0 md:border-l border-red-900/50 pt-4 md:pt-0 md:pl-6">
+                            <div class="flex-1 border-t md;border-t-0 md:border-l border-red-900/50 pt-4 md:pt-0 md:pl-6">
                                 <h4 class="text-red-400 font-bold uppercase text-xs mb-3 border-b border-red-900/50 pb-1 text-center">En mode Envoyé</h4>
                                 ${checkboxGroup(isPisse ? 'pisse_envoye' : 'merde_envoye')}
                             </div>
@@ -553,19 +597,59 @@
             document.getElementById('followUpModal').style.display = 'none';
         }
 
-        // submit: validate age checkbox then POST to Formspree via fetch so the page doesn't redirect
+        // Arrival modal logic (chain)
+        document.addEventListener('DOMContentLoaded', () => {
+            // show GDPR modal first
+            document.getElementById('gdprModal').style.display = 'flex';
+
+            document.getElementById('gdprAccept').addEventListener('click', () => {
+                document.getElementById('rgpdConsentHidden').value = 'yes';
+                document.getElementById('gdprModal').style.display = 'none';
+                // next modal: age
+                setTimeout(() => document.getElementById('ageModal').style.display = 'flex', 200);
+            });
+
+            document.getElementById('gdprDecline').addEventListener('click', () => {
+                document.getElementById('rgpdConsentHidden').value = 'no';
+                document.getElementById('gdprModal').style.display = 'none';
+                alert('Tu dois accepter le consentement RGPD pour utiliser ce formulaire.');
+                // hide the form to prevent use
+                document.getElementById('quizForm').classList.add('hidden');
+            });
+
+            document.getElementById('ageYes').addEventListener('click', () => {
+                document.getElementById('over18Hidden').value = 'yes';
+                document.getElementById('ageModal').style.display = 'none';
+                setTimeout(() => document.getElementById('sexeModal').style.display = 'flex', 200);
+            });
+
+            document.getElementById('ageNo').addEventListener('click', () => {
+                document.getElementById('over18Hidden').value = 'no';
+                document.getElementById('ageModal').style.display = 'none';
+                alert('Tu dois avoir plus de 18 ans pour utiliser ce formulaire.');
+                document.getElementById('quizForm').classList.add('hidden');
+            });
+
+            document.getElementById('sexeContinue').addEventListener('click', () => {
+                const chosen = document.querySelector('input[name="arrival_sex"]:checked')?.value || 'prefere_pas_dire';
+                document.getElementById('sexeHidden').value = chosen;
+                document.getElementById('sexeModal').style.display = 'none';
+            });
+        });
+
+        // submit: validate age hidden field then POST to Formspree via fetch so the page doesn't redirect
         document.getElementById('quizForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // must confirm >18
-            const ageYes = document.querySelector('input[name="over18"][value="yes"]');
-            if (!ageYes || !ageYes.checked) {
+            // must confirm >18 via hidden value set by the arrival modal
+            const over18Val = document.getElementById('over18Hidden').value;
+            if (over18Val !== 'yes') {
                 alert('Vous devez confirmer être majeur(e) (plus de 18 ans) pour continuer.');
                 return;
             }
 
             const form = this;
-            const submitBtn = form.querySelector('button[type="submit"]');
+            const submitBtn = document.getElementById('submitButton');
             submitBtn.disabled = true;
             submitBtn.innerText = 'Envoi...';
 
@@ -601,6 +685,11 @@
 
         // small helper in results to let user go back
         document.getElementById('openMailBtn').addEventListener('click', () => location.reload());
+
+function setSexe(value) {
+    document.getElementById('sexeHidden').value = value;
+    document.getElementById('sexeModal').style.display = 'none';
+}
     </script>
 </body>
 </html>
