@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>L'Heure des Non-Dits - Cash & Vulgaire</title>
+    <title>L'Abysse - Cash & Vulgaire</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -14,12 +14,6 @@
             background: linear-gradient(135deg, #0a0212 0%, #1e0533 100%);
             color: #f3e8ff;
             min-height: 100vh;
-            overflow-x: hidden;
-            /* Empêche la sélection de texte */
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
         }
         h1 { font-family: 'Playfair Display', serif; }
         
@@ -66,17 +60,6 @@
             padding: 1rem;
         }
 
-        #consentOverlay {
-            display: flex;
-            position: fixed;
-            inset: 0;
-            background: #000;
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-            overflow-y: auto;
-        }
-
         .modal-container {
             max-height: 90vh;
             overflow-y: auto;
@@ -109,98 +92,44 @@
 </head>
 <body class="p-4 md:p-8">
 
-    <!-- Écran de Bienvenue / Consentement / Profil -->
-    <div id="consentOverlay">
-        <div class="max-w-md w-full glass-card p-8 border-red-600 text-center mx-4 my-8">
-            <h2 class="text-2xl font-bold text-red-600 mb-4 uppercase tracking-widest">Accès Restreint</h2>
-            <p class="text-xs text-gray-400 mb-6 uppercase tracking-tighter italic">L'Heure des Non-Dits — Étude de Comportement</p>
-            
-            <div class="space-y-6 text-left">
-                <!-- Sexe -->
-                <div>
-                    <p class="text-sm font-semibold text-gray-300 mb-2">Votre Sexe :</p>
-                    <div class="grid grid-cols-3 gap-2">
-                        <label class="radio-label">
-                            <input type="radio" name="userGender" value="Homme" onchange="checkFullConsent()">
-                            <span>Homme</span>
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="userGender" value="Femme" onchange="checkFullConsent()">
-                            <span>Femme</span>
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="userGender" value="Autre" onchange="checkFullConsent()">
-                            <span>Autre</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Âge -->
-                <label class="flex items-center space-x-3 cursor-pointer group">
-                    <div class="relative">
-                        <input type="checkbox" id="ageCheckbox" class="peer hidden" onchange="checkFullConsent()">
-                        <div class="w-6 h-6 border-2 border-red-900 rounded bg-black peer-checked:bg-red-600 peer-checked:border-red-400 transition-all"></div>
-                        <i class="fas fa-check absolute top-1 left-1 text-xs text-white opacity-0 peer-checked:opacity-100"></i>
-                    </div>
-                    <span class="text-xs text-gray-400 group-hover:text-white transition-colors uppercase font-bold">Je certifie avoir plus de 18 ans.</span>
-                </label>
-
-                <!-- RGPD -->
-                <label class="flex items-start space-x-3 cursor-pointer group">
-                    <div class="relative mt-1">
-                        <input type="checkbox" id="consentCheckbox" class="peer hidden" onchange="checkFullConsent()">
-                        <div class="w-6 h-6 border-2 border-red-900 rounded bg-black peer-checked:bg-red-600 peer-checked:border-red-400 transition-all"></div>
-                        <i class="fas fa-check absolute top-1 left-1 text-xs text-white opacity-0 peer-checked:opacity-100"></i>
-                    </div>
-                    <span class="text-[10px] text-gray-400 group-hover:text-white transition-colors leading-tight">J'accepte que mes réponses soient collectées de manière anonyme pour des études statistiques sur les comportements sexuels.</span>
-                </label>
-            </div>
-
-            <button onclick="acceptConsent()" id="enterBtn" disabled class="w-full mt-8 py-4 bg-zinc-900 text-zinc-600 font-bold rounded-lg uppercase tracking-widest transition-all">
-                Entrer dans L'Heure des Non-Dits
-            </button>
-        </div>
-    </div>
-
     <div class="max-w-4xl mx-auto">
         <header class="text-center mb-12">
             <h1 class="text-4xl md:text-5xl font-bold mb-4 text-red-600 uppercase tracking-tighter">
-                L'Heure des Non-Dits
+                L'Abysse Intime
             </h1>
-            <p class="text-red-200 opacity-60 italic">Réponds avec une honnêteté brutale.</p>
+            <p class="text-red-200 opacity-60 italic">C'est le moment de dire toutes les veritées.</p>
         </header>
 
-        <!-- Utilisation de Formspree pour l'envoi automatique direct -->
-        <form id="quizForm" action="https://formspree.io/f/kilianjunker94@gmail.com" method="POST" class="space-y-6 pb-20">
+        <form id="quizForm" class="space-y-6 pb-20">
             <div class="glass-card p-6 border border-red-900/30">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="text" id="userName" name="Prenom" class="p-3 rounded-lg focus:ring-2 focus:ring-red-600 outline-none" placeholder="Ton Prénom (optionnel)">
-                    <input type="email" id="partnerEmail" name="Email_Partenaire" class="p-3 rounded-lg focus:ring-2 focus:ring-red-600 outline-none" placeholder="Email de ton/ta partenaire (optionnel)">
+                    <input type="text" id="userName" required class="p-3 rounded-lg focus:ring-2 focus:ring-red-600 outline-none" placeholder="Ton Prénom">
+                    <input type="email" id="partnerEmail" required class="p-3 rounded-lg focus:ring-2 focus:ring-red-600 outline-none" placeholder="Email de ton/ta partenaire">
                 </div>
-                <!-- Champs cachés pour le profil capturé au début -->
-                <input type="hidden" name="Sexe_Utilisateur" id="hiddenGender">
             </div>
 
             <div id="questionsContainer" class="space-y-6"></div>
 
             <div class="text-center mt-10">
-                <button type="submit" id="mainSubmitBtn" class="bg-red-800 hover:bg-red-700 text-white font-bold py-5 px-14 rounded-full transition-all shadow-[0_0_30px_rgba(153,27,27,0.4)] uppercase">
-                    Valider mes réponses
+                <button type="submit" class="bg-red-800 hover:bg-red-700 text-white font-bold py-5 px-14 rounded-full transition-all shadow-[0_0_30px_rgba(153,27,27,0.4)] uppercase">
+                    Valider
                 </button>
             </div>
         </form>
 
         <div id="resultsSection" class="hidden glass-card p-10 text-center">
-            <h2 class="text-3xl font-bold text-red-600 mb-4 uppercase">C'est envoyé.</h2>
-            <p class="mb-8 text-gray-300 italic">Tes vérités sont en route vers mon bureau. Rien ne pourra plus les effacer.</p>
-            <i class="fas fa-check-circle text-6xl text-red-600 mb-4"></i>
+            <h2 class="text-3xl font-bold text-red-600 mb-4 uppercase">Le dossier est prêt</h2>
+            <p class="mb-8 text-gray-300">Tes vérités sont enregistrées. Prêt(e) à ce qu'il/elle lise tout ça ?</p>
+            <button onclick="sendViaMailto()" class="bg-red-900 p-4 rounded-lg text-white font-bold hover:bg-red-800 transition-colors">
+                Envoyer le rapport par Email
+            </button>
         </div>
     </div>
 
     <!-- Modals -->
     <div id="envisageableModal" class="modal-overlay">
         <div class="bg-black border border-red-600 p-8 rounded-2xl max-w-sm w-full text-center shadow-[0_0_50px_rgba(220,38,38,0.5)]">
-            <h3 class="text-xl font-bold text-red-500 mb-4 uppercase">C'est envisageable ?</h3>
+            <h3 class="text-xl font-bold text-red-500 mb-4">MAIS... c'est envisageable ??</h3>
             <p class="text-gray-400 mb-6 italic" id="modalContext"></p>
             <div class="flex gap-4 justify-center">
                 <button onclick="handleModalResponse('Oui, pourquoi pas')" class="bg-red-700 px-6 py-2 rounded font-bold hover:bg-red-600">OUI</button>
@@ -211,100 +140,97 @@
 
     <div id="followUpModal" class="modal-overlay">
         <div class="bg-black border border-red-600 p-8 rounded-2xl modal-container max-w-2xl w-full text-center shadow-[0_0_50px_rgba(220,38,38,0.5)] m-4">
-            <h3 class="text-xl font-bold text-red-500 mb-4 uppercase tracking-wider" id="followUpTitle">Précise un peu...</h3>
-            <div id="followUpContent" class="mb-6"></div>
+            <h3 class="text-xl font-bold text-red-500 mb-4" id="followUpTitle">Précise un peu...</h3>
+            <div id="followUpContent" class="mb-6">
+                <!-- Content injected via JS -->
+            </div>
             <button onclick="closeFollowUp()" id="followUpSubmitBtn" class="bg-red-700 px-10 py-3 rounded-full font-bold hover:bg-red-600 transition-all uppercase tracking-widest text-sm">VALIDER</button>
         </div>
     </div>
 
     <script>
-        // Gestion du consentement et du profil
-        const ageCheckbox = document.getElementById('ageCheckbox');
-        const consentCheckbox = document.getElementById('consentCheckbox');
-        const enterBtn = document.getElementById('enterBtn');
-        let userGender = "";
-
-        function checkFullConsent() {
-            userGender = document.querySelector('input[name="userGender"]:checked')?.value;
-            const isAdult = ageCheckbox.checked;
-            const isConsented = consentCheckbox.checked;
-
-            if (userGender && isAdult && isConsented) {
-                enterBtn.disabled = false;
-                enterBtn.classList.remove('bg-zinc-900', 'text-zinc-600');
-                enterBtn.classList.add('bg-red-600', 'text-white', 'hover:bg-red-500');
-            } else {
-                enterBtn.disabled = true;
-                enterBtn.classList.add('bg-zinc-900', 'text-zinc-600');
-                enterBtn.classList.remove('bg-red-600', 'text-white', 'hover:bg-red-500');
-            }
-        }
-
-        function acceptConsent() {
-            document.getElementById('consentOverlay').style.display = 'none';
-            document.getElementById('hiddenGender').value = userGender;
-            document.body.style.overflow = 'auto';
-        }
-
         const questions = [
-            { id: 'q1', type: 'scale', text: "As-tu déjà utilisé le pied de ton/ta partenaire dans une baise ?" },
-            { id: 'q2', type: 'scale', text: "T'es-tu déjà envoyé(e) dans des chiottes, un parking ou tous types de lieux publics ?" },
+            { id: 'q1', type: 'scale', text: "As-tu déjà utiliser le pied de ton/ta partenaire dans une baise ?" },
+            { id: 'q2', type: 'scale', text: "T'es-tu déjà envoyé dans des chiottes, un parking ou tous types de lieux public ?" },
             { id: 'q3', type: 'scale', text: "As-tu déjà léché une boisson ou de la bouffe comme un ogre sur l'entrejambe de l'autre ?" },
             { id: 'q4', type: 'scale', text: "As-tu déjà craché sur la sale tête de ton/ta partenaire ?", hasFollowUp: 'crachat' },
-            { id: 'q5', type: 'scale', text: "As-tu déjà filmé une baise ?" },
+            { id: 'q5', type: 'scale', text: "As-tu déjà filmer une baise ?" },
             { id: 'q6', type: 'scale', text: "As-tu déjà utilisé un gode ou un gros vibro pendant ?" },
-            { id: 'q7', type: 'scale', text: "As-tu déjà baisé sauvagement pendant que tes darons ou tes potes étaient dans le même lieu ?" },
+            { id: 'q7', type: 'scale', text: "As-tu déjà baisé sauvagement pendant que tes darons (membre de la famille) ou tes potes étaient dans le même lieu ?" },
             { id: 'q8', type: 'scale', text: "As-tu déjà tenté de forcer le passage dans le cul sans lubrifiant, en mode barbare ?" },
             { id: 'q9', type: 'scale', text: "T'es-tu déjà fait ligoter comme une bête ?" },
-            { id: 'q10', type: 'scale', text: "As-tu déjà kiffé recevoir des gifles/bifles pendant la baise ?" },
+            { id: 'q10', type: 'scale', text: "As-tu déjà kiffé recevoir des gifles/bifles de forrain pendant la baise ?" },
             { id: 'q11', type: 'scale', text: "As-tu déjà pris ou causé des vraies fessées ?", hasFollowUp: 'fessées' },
             { id: 'q12', type: 'scale', text: "As-tu déjà torturé ton/ta partenaire ?", hasFollowUp: 'torture' },
             { id: 'q13', type: 'scale', text: "As-tu déjà baisé comme un porc sur un balcon en espérant être vu par autrui ?" },
             { id: 'q14', type: 'scale', text: "As-tu déjà bandé/mouillé en imaginant ton/ta partenaire baiser avec un/une autre ?" },
             { id: 'q15', type: 'scale', text: "As-tu déjà voulu te taper un plan à trois (ou plus) avec une/un totale inconnue ?", hasFollowUp: 'plan_trois' },
-            { id: 'section_beuteu', type: 'checklist', text: "Lieux de pénétration déjà testés :", options: ["Vagin", "Anus", "Bouche", "Hand", "Seins", "Cuisses", "Pieds", "Aisselles", "Oreille", "Nombril"] },
+            { id: 'section_beuteu', type: 'checklist', text: "Lieux de pénétration (cocher tout ce qui a déjà accueilli une beuteu dans vos baises) :", options: ["Vagin", "Anus", "Bouche", "Main", "Entre les seins", "Entre les cuisses", "Pieds", "Aisselles", "Oreille (sérieux ?)", "Nombril"] },
             { id: 'q16', type: 'scale', text: "As-tu déjà eu envie d'être traité(e) comme une chienne / un esclave (collier, laisse, ordres) ?" },
-            { id: 'q17', type: 'scale', text: "As-tu déjà éjaculé sans prévenir comme un détraqué ? (Homme uniquement)"},
+            { id: 'q17', type: 'scale', text: "As-tu déjà ejaculé sans prevenir comme un detraqué ? Homme uniquement"},
             { id: 'q18', type: 'scale', text: "As-tu déjà voulu simuler un viol, avec de la vraie résistance et de la brutalité ?" },
             { id: 'q19', type: 'scale', text: "As-tu déjà eu envie de te faire pisser dessus ou de m'arroser la gueule ?" },
             { id: 'q20', type: 'binary', text: "La pisse ?", options: ["Répugnant", "Avec plaisir"], hasFollowUp: 'pisse_flow' },
             { id: 'q21', type: 'binary', text: "La merde ?", options: ["Répugnant", "Avec plaisir"], hasFollowUp: 'merde_flow' },
-            { id: 'q22', type: 'scale', text: "As-tu déjà reçu/rentré une main entière/poing dans quelconque orifice ?", hasFollowUp: 'fist_flow' },
-            { id: 'q23', type: 'checklist', text: "Choses sorties de ton corps pendant l'acte :", options: ["Pet/Pet de fouf", "Vomi", "Pisse", "Sang", "Larmes", "Gros glaire", "Rien"] },
+            { id: 'q22', type: 'scale', text: "As-tu déjà reçu/rentrer une main entière/poing dans quelconque orifice humain ?", hasFollowUp: 'fist_flow' },
+            { id: 'q23', type: 'checklist', text: "Ces choses sont sorties de ton corps pendant l'acte :", options: ["Pet/Pet de fouf", "Vomi", "Pisse", "Sang", "Larmes", "Gros glaire", "Rien, je suis propre"] },
             { id: 'q24', type: 'scale', text: "As-tu déjà avalé le jus de ton/ta partenaire ?" },
-            { id: 'q25', type: 'scale', text: "As-tu déjà voulu jouer à l'inceste (jeu de rôle) ?" },
+            { id: 'q25', type: 'scale', text: "As-tu déjà voulu jouer à l'inceste (frère/soeur, daron/fille) ?" },
             { id: 'q26', type: 'scale', text: "As-tu déjà baisé dans un lieu sacré ?" },
-            { id: 'q27', type: 'binary', text: "Se droguer pour baiser ?", options: ["Chaud(e)", "À tester", "Déjà fait", "Hors de question"] },
+            { id: 'q27', type: 'binary', text: "L'idée de se droguer comme des porcs pour baiser sans aucune limite morale, t'en penses quoi ?", options: ["Chaud(e), je veux perdre le contrôle", "À tester, mais j'ai un peu peur", "Déjà fait, c'est incroyable", "Hors de question, trop dangereux"] },
             { id: 'q28', type: 'scale', text: "As-tu déjà blessé ton/ta partenaire ?", hasFollowUp: 'blessure' },
-            { id: 'q29', type: 'range', text: "Durée moyenne de tes baises ?", rangeMin: 0, rangeMax: 60, unit: 'min', hasFollowUp: 'duree' },
-            { id: 'q30', type: 'range', text: "Satisfaction globale de ton/ta partenaire ?", rangeMin: 0, rangeMax: 100, unit: '%', hasFollowUp: 'satisfaction' }
+            { id: 'q29', type: 'range', text: "Quelle est la durée moyenne de tes baises ?", rangeMin: 0, rangeMax: 60, unit: 'min', hasFollowUp: 'duree' },
+            { id: 'q30', type: 'range', text: "Globalement, es-tu satisfait(e) par ton/ta partenaire ?", rangeMin: 0, rangeMax: 100, unit: '%', hasFollowUp: 'satisfaction' }
         ];
 
-        const scaleOptions = ["Oui, mais c'était nul", "Oui, et régulièrement", "Oui, une fois", "Non"];
+        const scaleOptions = ["Oui, mais c'était nul à chier", "Oui, et régulièrement", "Oui, une fois", "Non"];
         const container = document.getElementById('questionsContainer');
         let currentModalQuestionId = null;
+        let selectedLiquide = null;
+        let selectedPisseMode = null;
+        let selectedMerdeMode = null;
 
-        // Génération des questions
         questions.forEach((q, i) => {
             const card = document.createElement('div');
             card.className = "glass-card p-6 border-l-4 border-red-900 transition-all duration-300 hover:border-red-600";
-            let html = `<p class="text-lg font-bold mb-4 text-gray-100">${q.type === 'checklist' ? '✓' : i+1}. ${q.text}</p>`;
+            
+            const numberLabel = q.type === 'checklist' ? '<i class="fa-solid fa-check-double text-red-600 mr-2"></i>' : `${i+1}. `;
+            let html = `<p class="text-lg font-bold mb-4 text-gray-100">${numberLabel}${q.text}</p>`;
 
             if (q.type === 'scale' || q.type === 'binary') {
                 const opts = q.type === 'binary' ? q.options : scaleOptions;
                 html += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-${opts.length} gap-2">`;
                 opts.forEach(opt => {
-                    html += `<label class="radio-label"><input type="radio" name="${q.id}" value="${opt}" onchange="handleAnswerChange(this, '${q.id}', '${q.hasFollowUp || ''}')"><span>${opt}</span></label>`;
+                    html += `
+                        <label class="radio-label">
+                            <input type="radio" name="${q.id}" value="${opt}" required onchange="handleAnswerChange(this, '${q.id}', '${q.hasFollowUp || ''}')">
+                            <span>${opt}</span>
+                        </label>`;
                 });
-                html += `</div><input type="hidden" name="extra_${q.id}" id="extra_${q.id}"><div id="envisageable_${q.id}" class="mt-2 text-[10px] text-red-500 font-bold uppercase tracking-widest italic"></div>`;
+                html += `</div><div id="envisageable_${q.id}" class="mt-2 text-xs text-red-500 font-bold uppercase tracking-widest italic"></div>`;
             } else if (q.type === 'range') {
-                const min = q.rangeMin || 0; const max = q.rangeMax || 100;
-                const unit = q.unit || ''; const initial = Math.round((max + min) / 2);
-                html += `<div class="px-4"><input type="range" name="${q.id}" id="range_${q.id}" min="${min}" max="${max}" value="${initial}" oninput="updateRangeLabel('${q.id}', this.value, '${unit}')" onchange="checkRangeFollowUp('${q.id}', this.value, '${q.hasFollowUp || ''}')"><div class="flex justify-between mt-2 text-xs text-gray-500"><span>Min</span><span id="label_${q.id}" class="text-red-500 font-bold">${initial}${unit}</span><span>Max</span></div></div><input type="hidden" name="extra_${q.id}" id="extra_${q.id}"><div id="envisageable_${q.id}" class="mt-2 text-[10px] text-red-500 font-bold uppercase tracking-widest italic"></div>`;
+                const min = q.rangeMin || 0;
+                const max = q.rangeMax || 100;
+                const unit = q.unit || '';
+                const initial = Math.round((max + min) / 2);
+                
+                html += `
+                <div class="px-4">
+                    <input type="range" name="${q.id}" id="range_${q.id}" min="${min}" max="${max}" value="${initial}" oninput="updateRangeLabel('${q.id}', this.value, '${unit}')" onchange="checkRangeFollowUp('${q.id}', this.value, '${q.hasFollowUp || ''}')">
+                    <div class="flex justify-between mt-2 text-sm text-gray-400">
+                        <span>Min</span>
+                        <span id="label_${q.id}" class="text-red-500 font-bold">${initial}${unit}</span>
+                        <span>Max</span>
+                    </div>
+                </div><div id="envisageable_${q.id}" class="mt-2 text-xs text-red-500 font-bold uppercase tracking-widest italic"></div>`;
             } else if (q.type === 'checklist') {
                 html += `<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">`;
                 q.options.forEach(opt => {
-                    html += `<label class="check-label"><input type="checkbox" name="${q.id}[]" value="${opt}"><span>${opt}</span></label>`;
+                    html += `
+                        <label class="check-label">
+                            <input type="checkbox" name="${q.id}" value="${opt}">
+                            <span>${opt}</span>
+                        </label>`;
                 });
                 html += `</div>`;
             }
@@ -314,24 +240,32 @@
 
         function updateRangeLabel(id, val, unit) {
             let displayVal = val;
-            if (id === 'q29' && parseInt(val) === 60) displayVal = "60+";
+            if (id === 'q29' && parseInt(val) === 60) {
+                displayVal = "60+";
+            }
             document.getElementById(`label_${id}`).innerText = displayVal + unit;
         }
 
         function checkRangeFollowUp(id, val, followUpType) {
-            if (followUpType === 'duree' && parseInt(val) < 10) showFollowUp(id, 'duree_feedback');
-            else if (followUpType === 'satisfaction' && parseInt(val) < 50) showFollowUp(id, 'tromperie');
+            if (followUpType === 'duree' && parseInt(val) < 10) {
+                showFollowUp(id, 'duree_feedback');
+            } else if (followUpType === 'satisfaction' && parseInt(val) < 50) {
+                showFollowUp(id, 'tromperie');
+            }
         }
 
         function handleAnswerChange(input, qId, followUpType) {
-            if (input.value === "Non" || input.value === "Répugnant" || input.value === "Hors de question") {
+            if (input.value === "Non" || input.value === "Répugnant" || input.value === "Hors de question, trop dangereux") {
                 currentModalQuestionId = qId;
-                document.getElementById('modalContext').innerText = questions.find(q => q.id === qId).text;
+                const qText = questions.find(q => q.id === qId).text;
+                document.getElementById('modalContext').innerText = qText;
                 document.getElementById('envisageableModal').style.display = 'flex';
                 document.getElementById(`envisageable_${qId}`).innerText = "";
-                document.getElementById(`extra_${qId}`).value = "";
-            } else if (followUpType) {
-                showFollowUp(qId, followUpType);
+            } else {
+                document.getElementById(`envisageable_${qId}`).innerText = "";
+                if (followUpType) {
+                    showFollowUp(qId, followUpType);
+                }
             }
         }
 
@@ -340,85 +274,283 @@
             const title = document.getElementById('followUpTitle');
             const submitBtn = document.getElementById('followUpSubmitBtn');
             currentModalQuestionId = qId;
+            
             document.getElementById('followUpModal').style.display = 'flex';
             submitBtn.onclick = () => closeFollowUp(type);
 
             if (type === 'fessées') {
                 title.innerText = "C'était violent ?";
-                content.innerHTML = `<div class="grid grid-cols-2 gap-2"><label class="radio-label"><input type="radio" name="modal_f_${qId}" value="Avec marques"><span>OUI (marques)</span></label><label class="radio-label"><input type="radio" name="modal_f_${qId}" value="Juste pour chauffer"><span>NON (chauffer)</span></label></div>`;
+                content.innerHTML = `
+                    <p class="text-gray-300 mb-4">Jusqu'à laisser des marques ?</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="radio-label"><input type="radio" name="follow_${qId}" value="Avec marques"><span>OUI (marques)</span></label>
+                        <label class="radio-label"><input type="radio" name="follow_${qId}" value="Juste pour chauffer"><span>NON (juste chauffer)</span></label>
+                    </div>`;
             } else if (type === 'torture') {
-                title.innerText = "Type de torture ?";
-                content.innerHTML = `<textarea id="tortureScale" class="w-full p-3 rounded bg-zinc-900 border border-red-900/50 text-white focus:outline-none" rows="3" placeholder="Précisez..."></textarea>`;
+                title.innerText = "À quel point ?";
+                content.innerHTML = `
+                    <p class="text-gray-300 mb-4">à quel l'échelle :</p>
+                    <textarea id="tortureScale" class="w-full p-3 rounded bg-zinc-900 border border-red-900/50 text-white focus:outline-none" rows="3" placeholder="Légère, sanglante, psychologique..."></textarea>`;
             } else if (type === 'blessure') {
-                title.innerText = "L'intention ?";
-                content.innerHTML = `<div class="grid grid-cols-2 gap-2"><label class="radio-label"><input type="radio" name="modal_f_${qId}" value="Intentionnellement"><span>Voulu</span></label><label class="radio-label"><input type="radio" name="modal_f_${qId}" value="Accidentellement"><span>Accident</span></label></div>`;
+                title.innerText = "Précise l'intention";
+                content.innerHTML = `
+                    <p class="text-gray-300 mb-4">Comment ça s'est passé ?</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="radio-label"><input type="radio" name="follow_${qId}" value="Intentionnellement"><span>Intentionnellement</span></label>
+                        <label class="radio-label"><input type="radio" name="follow_${qId}" value="Sans faire exprès"><span>Sans faire exprès</span></label>
+                    </div>`;
             } else if (type === 'crachat') {
                 title.innerText = "Quel liquide ?";
-                content.innerHTML = `<div class="grid grid-cols-3 gap-2"><label class="radio-label"><input type="radio" name="modal_f_${qId}" value="Bave"><span>Bave</span></label><label class="radio-label"><input type="radio" name="modal_f_${qId}" value="Sperme"><span>Sperme</span></label><label class="radio-label"><input type="radio" name="modal_f_${qId}" value="Les deux"><span>Les deux</span></label></div>`;
-            } else if (type === 'plan_trois') {
-                title.innerText = "Nombre ?";
-                content.innerHTML = `<input type="number" id="nbParticipants" class="w-24 p-2 text-center text-xl font-bold rounded bg-zinc-900 border border-red-900/50 text-white" min="3" value="3">`;
+                content.innerHTML = `
+                    <p class="text-gray-300 mb-4 text-sm italic">C'était quoi exactement ?</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <label class="radio-label"><input type="radio" name="follow_${qId}" value="Bave"><span>Bave</span></label>
+                        <label class="radio-label"><input type="radio" name="follow_${qId}" value="Sperme"><span>Sperme</span></label>
+                        <label class="radio-label"><input type="radio" name="follow_${qId}" value="Les deux"><span>Les deux</span></label>
+                    </div>
+                    <div class="flex flex-col gap-2 mt-4">
+                        <label class="text-xs text-gray-500 uppercase font-bold text-left">Autre (précise) :</label>
+                        <input type="text" id="customCrachat" class="w-full p-2 rounded bg-zinc-900 border border-red-900/50 text-white" placeholder="Liquide séminal, etc.">
+                    </div>`;
+            } else if (type === 'crachat_cible') {
+                title.innerText = "Où ça ?";
+                const isDouble = selectedLiquide === "Les deux";
+                
+                let checkboxGroup = (prefix) => `
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="check-label"><input type="checkbox" name="${prefix}_${qId}" value="Visage"><span>Visage</span></label>
+                        <label class="check-label"><input type="checkbox" name="${prefix}_${qId}" value="Bouche"><span>Bouche</span></label>
+                        <label class="check-label"><input type="checkbox" name="${prefix}_${qId}" value="Seins"><span>Seins</span></label>
+                        <label class="check-label"><input type="checkbox" name="${prefix}_${qId}" value="Sexe"><span>Sexe</span></label>
+                        <label class="check-label"><input type="checkbox" name="${prefix}_${qId}" value="Cul"><span>Cul</span></label>
+                        <label class="check-label"><input type="checkbox" name="${prefix}_${qId}" value="Cheveux"><span>Cheveux</span></label>
+                    </div>`;
+
+                if (isDouble) {
+                    content.innerHTML = `
+                        <div class="flex flex-col md:flex-row gap-6 text-left">
+                            <div class="flex-1">
+                                <h4 class="text-red-400 font-bold uppercase text-xs mb-3 border-b border-red-900/50 pb-1 text-center">Pour la Bave</h4>
+                                ${checkboxGroup('target_bave')}
+                            </div>
+                            <div class="flex-1 border-t md:border-t-0 md:border-l border-red-900/50 pt-4 md:pt-0 md:pl-6">
+                                <h4 class="text-red-400 font-bold uppercase text-xs mb-3 border-b border-red-900/50 pb-1 text-center">Pour le Sperme</h4>
+                                ${checkboxGroup('target_sperme')}
+                            </div>
+                        </div>`;
+                } else {
+                    const label = selectedLiquide || "le fluide";
+                    content.innerHTML = `
+                        <p class="text-gray-300 mb-4 text-sm italic">Cible(s) pour ${label.toLowerCase()} :</p>
+                        ${checkboxGroup('target_unique')}`;
+                }
             } else if (type === 'pisse_flow' || type === 'merde_flow') {
+                const label = type === 'pisse_flow' ? 'la pisse' : 'la merde';
                 title.innerText = "Action ?";
-                content.innerHTML = `<div class="grid grid-cols-3 gap-2"><label class="radio-label"><input type="radio" name="modal_f_${qId}" value="Reçu"><span>Reçu</span></label><label class="radio-label"><input type="radio" name="modal_f_${qId}" value="Envoyé"><span>Donné</span></label><label class="radio-label"><input type="radio" name="modal_f_${qId}" value="Les deux"><span>Les deux</span></label></div>`;
+                content.innerHTML = `
+                    <p class="text-gray-300 mb-4 text-sm italic">Tu préfères quoi pour ${label} ?</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <label class="radio-label"><input type="radio" name="mode_${qId}" value="Reçu"><span>Reçu ?</span></label>
+                        <label class="radio-label"><input type="radio" name="mode_${qId}" value="Envoyé"><span>Envoyé ?</span></label>
+                        <label class="radio-label"><input type="radio" name="mode_${qId}" value="Les deux"><span>Les deux</span></label>
+                    </div>`;
+            } else if (type === 'pisse_cible' || type === 'merde_cible') {
+                const isPisse = type === 'pisse_cible';
+                const selectedMode = isPisse ? selectedPisseMode : selectedMerdeMode;
+                const isDouble = selectedMode === "Les deux";
+                title.innerText = "Où ça ?";
+                
+                let checkboxGroup = (prefix) => `
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="check-label"><input type="checkbox" name="${prefix}_${qId}" value="Visage"><span>Visage</span></label>
+                        <label class="check-label"><input type="checkbox" name="${prefix}_${qId}" value="Bouche"><span>Bouche</span></label>
+                        <label class="check-label"><input type="checkbox" name="${prefix}_${qId}" value="Corps"><span>Corps</span></label>
+                        <label class="check-label"><input type="checkbox" name="${prefix}_${qId}" value="Sexe"><span>Sexe</span></label>
+                        <label class="check-label"><input type="checkbox" name="${prefix}_${qId}" value="Cul"><span>Cul</span></label>
+                        <label class="check-label"><input type="checkbox" name="${prefix}_${qId}" value="Cheveux"><span>Cheveux</span></label>
+                    </div>`;
+
+                if (isDouble) {
+                    content.innerHTML = `
+                        <div class="flex flex-col md:flex-row gap-6 text-left">
+                            <div class="flex-1">
+                                <h4 class="text-red-400 font-bold uppercase text-xs mb-3 border-b border-red-900/50 pb-1 text-center">En mode Reçu</h4>
+                                ${checkboxGroup(isPisse ? 'pisse_recu' : 'merde_recu')}
+                            </div>
+                            <div class="flex-1 border-t md:border-t-0 md:border-l border-red-900/50 pt-4 md:pt-0 md:pl-6">
+                                <h4 class="text-red-400 font-bold uppercase text-xs mb-3 border-b border-red-900/50 pb-1 text-center">En mode Envoyé</h4>
+                                ${checkboxGroup(isPisse ? 'pisse_envoye' : 'merde_envoye')}
+                            </div>
+                        </div>`;
+                } else {
+                    content.innerHTML = `
+                        <p class="text-gray-300 mb-4 text-sm italic">Cibles pour ${selectedMode} :</p>
+                        ${checkboxGroup(isPisse ? 'pisse_unique' : 'merde_unique')}`;
+                }
+            } else if (type === 'pisse_avale' || type === 'merde_avale') {
+                const isPisse = type === 'pisse_avale';
+                title.innerText = "Dernière précision...";
+                content.innerHTML = `
+                    <p class="text-gray-300 mb-4 text-sm italic">Une fois dans la bouche, c'est quoi le sort de ${isPisse ? 'la pisse' : 'la merde'} ?</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="radio-label"><input type="radio" name="final_action_${qId}" value="Avalé"><span>Avalé</span></label>
+                        <label class="radio-label"><input type="radio" name="final_action_${qId}" value="${isPisse ? 'Craché' : 'Etalé'}"><span>${isPisse ? 'Craché' : 'Etalé'}</span></label>
+                    </div>`;
             } else if (type === 'fist_flow') {
-                title.innerText = "Orifice ?";
-                content.innerHTML = `<div class="grid grid-cols-2 gap-2"><label class="check-label"><input type="checkbox" name="modal_f_${qId}[]" value="Vaginal"><span>Vaginal</span></label><label class="check-label"><input type="checkbox" name="modal_f_${qId}[]" value="Anal"><span>Anal</span></label></div>`;
+                title.innerText = "Où ça ?";
+                content.innerHTML = `
+                    <p class="text-gray-300 mb-4 text-sm italic">Dans quel(s) orifice(s) as-tu pratiqué/reçu le fist ?</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="check-label"><input type="checkbox" name="fist_target_${qId}" value="Vaginal"><span>Vaginal</span></label>
+                        <label class="check-label"><input type="checkbox" name="fist_target_${qId}" value="Anal"><span>Anal</span></label>
+                    </div>`;
             } else if (type === 'duree_feedback') {
-                title.innerText = "Pourquoi ?";
-                content.innerHTML = `<div class="grid grid-cols-1 gap-2"><label class="radio-label"><input type="radio" name="modal_f_${qId}" value="Par choix"><span>Par choix</span></label><label class="radio-label"><input type="radio" name="modal_f_${qId}" value="Involontaire"><span>Involontaire</span></label></div>`;
+                title.innerText = "Déjà fini ?";
+                content.innerHTML = `
+                    <p class="text-gray-300 mb-4">Moins de 10 minutes ? Précise un peu :</p>
+                    <div class="grid grid-cols-1 gap-2">
+                        <label class="radio-label"><input type="radio" name="follow_${qId}" value="Par choix"><span>Par choix</span></label>
+                        <label class="radio-label"><input type="radio" name="follow_${qId}" value="Pas par choix et c'est un problème"><span>Pas par choix et c'est un problème</span></label>
+                    </div>`;
             } else if (type === 'tromperie') {
-                title.innerText = "Bah trompe le/la";
-                content.innerHTML = `<p class="text-red-500 font-bold uppercase">Verdict sans appel.</p>`;
+                title.innerText = "Aïe...";
+                content.innerHTML = `<p class="text-gray-300 text-xl font-bold uppercase text-red-500">Bah trompe le/la, qu'est-ce que tu attends ?</p>`;
+            } else if (type === 'plan_trois') {
+                title.innerText = "Plus de 3 ?";
+                content.innerHTML = `
+                    <p class="text-gray-300 mb-4">Tu as déjà envisagé (ou fait) plus ? Combien de personnes au total ?</p>
+                    <div class="flex flex-col items-center gap-4">
+                        <input type="number" id="nbParticipants" class="w-24 p-2 text-center text-xl font-bold rounded bg-zinc-900 border border-red-900/50 text-white" min="3" value="3">
+                        <p class="text-xs text-zinc-500 italic">Laisse 3 si tu t'arrêtes là.</p>
+                    </div>`;
             }
         }
 
         function handleModalResponse(val) {
             if (currentModalQuestionId) {
-                const label = document.getElementById(`envisageable_${currentModalQuestionId}`);
-                const hiddenInput = document.getElementById(`extra_${currentModalQuestionId}`);
-                label.innerText = `[ENVISAGEABLE : ${val.toUpperCase()}]`;
-                hiddenInput.value = val;
+                document.getElementById(`envisageable_${currentModalQuestionId}`).innerText = `[ENVISAGEABLE : ${val.toUpperCase()}]`;
                 document.getElementById('envisageableModal').style.display = 'none';
             }
         }
 
         function closeFollowUp(type) {
             const label = document.getElementById(`envisageable_${currentModalQuestionId}`);
-            const hiddenInput = document.getElementById(`extra_${currentModalQuestionId}`);
-            let val = "";
-            
-            if (type === 'plan_trois') {
-                val = document.getElementById('nbParticipants').value || 3;
-                label.innerText = `[NB MAX : ${val}]`;
-            } else if (type === 'fist_flow') {
-                val = Array.from(document.querySelectorAll(`input[name="modal_f_${currentModalQuestionId}[]"]:checked`)).map(el => el.value).join(', ');
-                label.innerText = `[ORIFICE : ${val || 'Aucun'}]`;
-            } else if (type === 'torture') {
-                val = document.getElementById('tortureScale')?.value || "Non précisé";
-                label.innerText = `[DÉTAILS : ${val.toUpperCase()}]`;
-            } else if (type === 'tromperie') {
-                val = "Bah trompe le/la";
-                label.innerText = "[VERDICT : " + val.toUpperCase() + "]";
-            } else {
-                val = document.querySelector(`input[name="modal_f_${currentModalQuestionId}"]:checked`)?.value || "Non précisé";
-                label.innerText = `[PRÉCISION : ${val.toUpperCase()}]`;
+
+            if (type === 'crachat') {
+                let followVal = document.querySelector(`input[name="follow_${currentModalQuestionId}"]:checked`)?.value || 
+                                 document.getElementById('customCrachat')?.value || "";
+                selectedLiquide = followVal;
+                label.innerText = `[LIQUIDE : ${followVal.toUpperCase()}]`;
+                document.getElementById('followUpModal').style.display = 'none';
+                setTimeout(() => showFollowUp(currentModalQuestionId, 'crachat_cible'), 300);
+                return;
             }
-            
-            hiddenInput.value = val;
+
+            if (type === 'crachat_cible') {
+                if (selectedLiquide === "Les deux") {
+                    const baveTargets = Array.from(document.querySelectorAll(`input[name="target_bave_${currentModalQuestionId}"]:checked`)).map(el => el.value).join(', ');
+                    const spermeTargets = Array.from(document.querySelectorAll(`input[name="target_sperme_${currentModalQuestionId}"]:checked`)).map(el => el.value).join(', ');
+                    label.innerText += ` | CIBLES BAVE : ${baveTargets || 'Aucune'} | CIBLES SPERME : ${spermeTargets || 'Aucune'}`;
+                } else {
+                    const targets = Array.from(document.querySelectorAll(`input[name="target_unique_${currentModalQuestionId}"]:checked`)).map(el => el.value).join(', ');
+                    label.innerText += ` | CIBLES : ${targets || 'Aucune'}`;
+                }
+            } else if (type === 'pisse_flow') {
+                selectedPisseMode = document.querySelector(`input[name="mode_${currentModalQuestionId}"]:checked`)?.value;
+                label.innerText = `[MODE : ${selectedPisseMode.toUpperCase()}]`;
+                document.getElementById('followUpModal').style.display = 'none';
+                setTimeout(() => showFollowUp(currentModalQuestionId, 'pisse_cible'), 300);
+                return;
+            } else if (type === 'merde_flow') {
+                selectedMerdeMode = document.querySelector(`input[name="mode_${currentModalQuestionId}"]:checked`)?.value;
+                label.innerText = `[MODE : ${selectedMerdeMode.toUpperCase()}]`;
+                document.getElementById('followUpModal').style.display = 'none';
+                setTimeout(() => showFollowUp(currentModalQuestionId, 'merde_cible'), 300);
+                return;
+            } else if (type === 'pisse_cible') {
+                let showAvaler = false;
+                if (selectedPisseMode === "Les deux") {
+                    const recu = Array.from(document.querySelectorAll(`input[name="pisse_recu_${currentModalQuestionId}"]:checked`)).map(el => el.value);
+                    const envoye = Array.from(document.querySelectorAll(`input[name="pisse_envoye_${currentModalQuestionId}"]:checked`)).map(el => el.value);
+                    label.innerText += ` | CIBLES REÇU : ${recu.join(', ') || 'Aucune'} | CIBLES ENVOYÉ : ${envoye.join(', ') || 'Aucune'}`;
+                    if (recu.includes("Bouche") || envoye.includes("Bouche")) showAvaler = true;
+                } else {
+                    const targets = Array.from(document.querySelectorAll(`input[name="pisse_unique_${currentModalQuestionId}"]:checked`)).map(el => el.value);
+                    label.innerText += ` | CIBLES : ${targets.join(', ') || 'Aucune'}`;
+                    if (targets.includes("Bouche")) showAvaler = true;
+                }
+                document.getElementById('followUpModal').style.display = 'none';
+                if (showAvaler) setTimeout(() => showFollowUp(currentModalQuestionId, 'pisse_avale'), 300);
+                return;
+            } else if (type === 'merde_cible') {
+                let showAvaler = false;
+                if (selectedMerdeMode === "Les deux") {
+                    const recu = Array.from(document.querySelectorAll(`input[name="merde_recu_${currentModalQuestionId}"]:checked`)).map(el => el.value);
+                    const envoye = Array.from(document.querySelectorAll(`input[name="merde_envoye_${currentModalQuestionId}"]:checked`)).map(el => el.value);
+                    label.innerText += ` | CIBLES REÇU : ${recu.join(', ') || 'Aucune'} | CIBLES ENVOYÉ : ${envoye.join(', ') || 'Aucune'}`;
+                    if (recu.includes("Bouche") || envoye.includes("Bouche")) showAvaler = true;
+                } else {
+                    const targets = Array.from(document.querySelectorAll(`input[name="merde_unique_${currentModalQuestionId}"]:checked`)).map(el => el.value);
+                    label.innerText += ` | CIBLES : ${targets.join(', ') || 'Aucune'}`;
+                    if (targets.includes("Bouche")) showAvaler = true;
+                }
+                document.getElementById('followUpModal').style.display = 'none';
+                if (showAvaler) setTimeout(() => showFollowUp(currentModalQuestionId, 'merde_avale'), 300);
+                return;
+            } else if (type === 'pisse_avale' || type === 'merde_avale') {
+                const finalAction = document.querySelector(`input[name="final_action_${currentModalQuestionId}"]:checked`)?.value;
+                label.innerText += ` | ACTION : ${finalAction || 'Non précisé'}`;
+            } else if (type === 'fist_flow') {
+                const targets = Array.from(document.querySelectorAll(`input[name="fist_target_${currentModalQuestionId}"]:checked`)).map(el => el.value);
+                label.innerText = `[ORIFICE(S) : ${targets.join(', ') || 'Aucun'}]`;
+            } else if (type === 'duree_feedback') {
+                const followVal = document.querySelector(`input[name="follow_${currentModalQuestionId}"]:checked`)?.value || "Non précisé";
+                label.innerText = `[RETOUR : ${followVal.toUpperCase()}]`;
+            } else if (type === 'tromperie') {
+                label.innerText = `[CONSEIL : TROMPERIE CONSEILLÉE]`;
+            } else if (type === 'plan_trois') {
+                const nb = document.getElementById('nbParticipants').value || 3;
+                label.innerText = `[NB PARTICIPANTS MAX : ${nb}]`;
+            } else {
+                let followVal = document.querySelector(`input[name="follow_${currentModalQuestionId}"]:checked`)?.value || 
+                                 document.getElementById('tortureScale')?.value || "";
+                if (followVal) label.innerText = `[PRÉCISION : ${followVal}]`;
+            }
+
             document.getElementById('followUpModal').style.display = 'none';
         }
 
-        // Intercepter l'envoi pour afficher l'écran de succès
-        document.getElementById('quizForm').onsubmit = function() {
-            // On laisse l'envoi se faire vers Formspree
-            // Mais on peut simuler un chargement visuel
-            document.getElementById('mainSubmitBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> ENVOI EN COURS...';
+        document.getElementById('quizForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            this.classList.add('hidden');
+            document.getElementById('resultsSection').classList.remove('hidden');
+            window.scrollTo(0,0);
+        });
+
+        function sendViaMailto() {
+            const name = document.getElementById('userName').value;
+            const partner = document.getElementById('partnerEmail').value;
+            let body = `Rapport de l'Abysse Intime - Envoyé par ${name}\n`;
+            body += `==============================================\n\n`;
             
-            // Note: Formspree redirige normalement vers sa propre page de succès. 
-            // Pour rester sur la page, il faudrait utiliser AJAX (fetch), mais pour 
-            // rester simple et "automatique" comme demandé, l'action HTML standard suffit.
-        };
+            const form = document.getElementById('quizForm');
+            questions.forEach((q, i) => {
+                let ans = "";
+                if (q.type === 'checklist') {
+                    ans = Array.from(form.querySelectorAll(`input[name="${q.id}"]:checked`)).map(el => el.value).join(', ') || "Aucun";
+                } else if (q.type === 'range') {
+                    const val = form.querySelector(`input[name="${q.id}"]`).value;
+                    ans = (q.id === 'q29' && val === "60") ? "60+min" : val + (q.unit || "");
+                } else {
+                    ans = new FormData(form).get(q.id) || "Pas de réponse";
+                }
+                
+                const env = document.getElementById(`envisageable_${q.id}`)?.innerText || "";
+                body += `${q.type === 'checklist' ? 'CHECKLIST' : i+1}. ${q.text}\n   RÉPONSE: ${ans} ${env}\n\n`;
+            });
+
+            window.location.href = `mailto:${partner}?subject=CONFIDENTIEL : Les vérités crades de ${name}&body=${encodeURIComponent(body)}`;
+        }
     </script>
 </body>
 </html>
