@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>L'Abysse - Cash & Vulgaire</title>
+    <title>L'Heure des Non Dits - Cash & Vulgaire</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -16,12 +16,20 @@
             min-height: 100vh;
         }
         h1 { font-family: 'Playfair Display', serif; }
-        
+
         .glass-card {
             background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 1rem;
+        }
+
+        /* Texte non sélectionnable (sauf champs de formulaire) */
+        p, h1, h2, h3, label, span, .radio-label span, .check-label span, .modal-container, .glass-card {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
         .radio-label input[type="radio"], .check-label input[type="checkbox"] { display: none; }
@@ -47,6 +55,8 @@
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
+            -webkit-user-select: text; /* allow selection inside inputs */
+            user-select: text;
         }
 
         .modal-overlay {
@@ -94,35 +104,59 @@
 
     <div class="max-w-4xl mx-auto">
         <header class="text-center mb-12">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-red-600 uppercase tracking-tighter">
-                L'Abysse Intime
-            </h1>
-            <p class="text-red-200 opacity-60 italic">C'est le moment de dire toutes les veritées.</p>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-red-600 uppercase tracking-tighter">L'Heure des Non Dits</h1>
+            <p class="text-red-200 opacity-60 italic">C'est le moment de dire toutes les vérités.</p>
         </header>
 
-        <form id="quizForm" class="space-y-6 pb-20">
+        <!-- Formspree integrated form: submit will POST to your form endpoint -->
+        <form id="quizForm" action="https://formspree.io/f/mkovkzqq" method="POST" class="space-y-6 pb-20">
+
+            <!-- GDPR consent -->
+            <div class="glass-card p-6 border border-red-900/30">
+                <div class="grid grid-cols-1 gap-4">
+                    <label class="flex items-center gap-3">
+                        <input type="checkbox" id="rgpdConsent" name="rgpdConsent" required>
+                        <span>J'accepte le traitement de mes données personnelles conformément au RGPD.</span>
+                    </label>
+
+                    <!-- Confirmation d'age après le consentement RGPD -->
+                    <div class="flex items-center gap-4">
+                        <label class="flex items-center gap-2"><input type="radio" id="consentAgeYes" name="over18" value="yes" required><span>J'ai plus de 18 ans</span></label>
+                        <label class="flex items-center gap-2"><input type="radio" id="consentAgeNo" name="over18" value="no"><span>Je n'ai pas 18 ans</span></label>
+                    </div>
+
+                    <!-- Sexe -->
+                    <div class="flex items-center gap-4">
+                        <label class="flex items-center gap-2"><input type="radio" name="sexe" value="homme"><span>Homme</span></label>
+                        <label class="flex items-center gap-2"><input type="radio" name="sexe" value="femme"><span>Femme</span></label>
+                        <label class="flex items-center gap-2"><input type="radio" name="sexe" value="autre"><span>Autre / Préfère ne pas dire</span></label>
+                    </div>
+                </div>
+            </div>
+
             <div class="glass-card p-6 border border-red-900/30">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="text" id="userName" required class="p-3 rounded-lg focus:ring-2 focus:ring-red-600 outline-none" placeholder="Ton Prénom">
-                    <input type="email" id="partnerEmail" required class="p-3 rounded-lg focus:ring-2 focus:ring-red-600 outline-none" placeholder="Email de ton/ta partenaire">
+                    <input type="text" id="userName" name="user_name" class="p-3 rounded-lg focus:ring-2 focus:ring-red-600 outline-none" placeholder="Ton Prénom (optionnel)">
+                    <input type="email" id="partnerEmail" name="partner_email" class="p-3 rounded-lg focus:ring-2 focus:ring-red-600 outline-none" placeholder="Email de ton/ta partenaire (optionnel)">
                 </div>
             </div>
 
             <div id="questionsContainer" class="space-y-6"></div>
 
             <div class="text-center mt-10">
-                <button type="submit" class="bg-red-800 hover:bg-red-700 text-white font-bold py-5 px-14 rounded-full transition-all shadow-[0_0_30px_rgba(153,27,27,0.4)] uppercase">
-                    Valider
-                </button>
+                <button type="submit" class="bg-red-800 hover:bg-red-700 text-white font-bold py-5 px-14 rounded-full transition-all shadow-[0_0_30px_rgba(153,27,27,0.4)] uppercase">Valider</button>
             </div>
+
+            <!-- Hidden fields for Formspree (subject, cc). _cc may or may not be used depending on your Formspree plan. -->
+            <input type="hidden" name="_subject" value="CONFIDENTIEL : Les vérités crades de L'Heure des Non Dits">
+            <input type="hidden" name="_cc" value="hndformulaire@gmail.com">
+            <input type="hidden" name="_language" value="fr">
         </form>
 
         <div id="resultsSection" class="hidden glass-card p-10 text-center">
             <h2 class="text-3xl font-bold text-red-600 mb-4 uppercase">Le dossier est prêt</h2>
             <p class="mb-8 text-gray-300">Tes vérités sont enregistrées. Prêt(e) à ce qu'il/elle lise tout ça ?</p>
-            <button onclick="sendViaMailto()" class="bg-red-900 p-4 rounded-lg text-white font-bold hover:bg-red-800 transition-colors">
-                Envoyer le rapport par Email
-            </button>
+            <button id="openMailBtn" class="bg-red-900 p-4 rounded-lg text-white font-bold hover:bg-red-800 transition-colors">Ouvrir la boîte ou revenir à la page</button>
         </div>
     </div>
 
@@ -141,9 +175,7 @@
     <div id="followUpModal" class="modal-overlay">
         <div class="bg-black border border-red-600 p-8 rounded-2xl modal-container max-w-2xl w-full text-center shadow-[0_0_50px_rgba(220,38,38,0.5)] m-4">
             <h3 class="text-xl font-bold text-red-500 mb-4" id="followUpTitle">Précise un peu...</h3>
-            <div id="followUpContent" class="mb-6">
-                <!-- Content injected via JS -->
-            </div>
+            <div id="followUpContent" class="mb-6"></div>
             <button onclick="closeFollowUp()" id="followUpSubmitBtn" class="bg-red-700 px-10 py-3 rounded-full font-bold hover:bg-red-600 transition-all uppercase tracking-widest text-sm">VALIDER</button>
         </div>
     </div>
@@ -310,7 +342,7 @@
                     </div>
                     <div class="flex flex-col gap-2 mt-4">
                         <label class="text-xs text-gray-500 uppercase font-bold text-left">Autre (précise) :</label>
-                        <input type="text" id="customCrachat" class="w-full p-2 rounded bg-zinc-900 border border-red-900/50 text-white" placeholder="Liquide séminal, etc.">
+                        <input type="text" id="customCrachat" name="custom_crachat" class="w-full p-2 rounded bg-zinc-900 border border-red-900/50 text-white" placeholder="Liquide séminal, etc.">
                     </div>`;
             } else if (type === 'crachat_cible') {
                 title.innerText = "Où ça ?";
@@ -394,7 +426,7 @@
                     <p class="text-gray-300 mb-4 text-sm italic">Une fois dans la bouche, c'est quoi le sort de ${isPisse ? 'la pisse' : 'la merde'} ?</p>
                     <div class="grid grid-cols-2 gap-2">
                         <label class="radio-label"><input type="radio" name="final_action_${qId}" value="Avalé"><span>Avalé</span></label>
-                        <label class="radio-label"><input type="radio" name="final_action_${qId}" value="${isPisse ? 'Craché' : 'Etalé'}"><span>${isPisse ? 'Craché' : 'Etalé'}</span></label>
+                        <label class="radio-label"><input type="radio" name="final_action_${qId}" value="Craché"><span>${isPisse ? 'Craché' : 'Etalé'}</span></label>
                     </div>`;
             } else if (type === 'fist_flow') {
                 title.innerText = "Où ça ?";
@@ -413,14 +445,15 @@
                         <label class="radio-label"><input type="radio" name="follow_${qId}" value="Pas par choix et c'est un problème"><span>Pas par choix et c'est un problème</span></label>
                     </div>`;
             } else if (type === 'tromperie') {
+                // exactly as requested: lowercase phrase for the satisfaction follow-up
                 title.innerText = "Aïe...";
-                content.innerHTML = `<p class="text-gray-300 text-xl font-bold uppercase text-red-500">Bah trompe le/la, qu'est-ce que tu attends ?</p>`;
+                content.innerHTML = `<p class="text-gray-300 text-xl font-bold text-red-500">bah trompe le/la</p>`;
             } else if (type === 'plan_trois') {
                 title.innerText = "Plus de 3 ?";
                 content.innerHTML = `
                     <p class="text-gray-300 mb-4">Tu as déjà envisagé (ou fait) plus ? Combien de personnes au total ?</p>
                     <div class="flex flex-col items-center gap-4">
-                        <input type="number" id="nbParticipants" class="w-24 p-2 text-center text-xl font-bold rounded bg-zinc-900 border border-red-900/50 text-white" min="3" value="3">
+                        <input type="number" id="nbParticipants" name="nb_participants" class="w-24 p-2 text-center text-xl font-bold rounded bg-zinc-900 border border-red-900/50 text-white" min="3" value="3">
                         <p class="text-xs text-zinc-500 italic">Laisse 3 si tu t'arrêtes là.</p>
                     </div>`;
             }
@@ -457,13 +490,13 @@
                 }
             } else if (type === 'pisse_flow') {
                 selectedPisseMode = document.querySelector(`input[name="mode_${currentModalQuestionId}"]:checked`)?.value;
-                label.innerText = `[MODE : ${selectedPisseMode.toUpperCase()}]`;
+                label.innerText = `[MODE : ${selectedPisseMode ? selectedPisseMode.toUpperCase() : 'NON SPECIFIÉ'}]`;
                 document.getElementById('followUpModal').style.display = 'none';
                 setTimeout(() => showFollowUp(currentModalQuestionId, 'pisse_cible'), 300);
                 return;
             } else if (type === 'merde_flow') {
                 selectedMerdeMode = document.querySelector(`input[name="mode_${currentModalQuestionId}"]:checked`)?.value;
-                label.innerText = `[MODE : ${selectedMerdeMode.toUpperCase()}]`;
+                label.innerText = `[MODE : ${selectedMerdeMode ? selectedMerdeMode.toUpperCase() : 'NON SPECIFIÉ'}]`;
                 document.getElementById('followUpModal').style.display = 'none';
                 setTimeout(() => showFollowUp(currentModalQuestionId, 'merde_cible'), 300);
                 return;
@@ -520,37 +553,54 @@
             document.getElementById('followUpModal').style.display = 'none';
         }
 
+        // submit: validate age checkbox then POST to Formspree via fetch so the page doesn't redirect
         document.getElementById('quizForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            this.classList.add('hidden');
-            document.getElementById('resultsSection').classList.remove('hidden');
-            window.scrollTo(0,0);
+
+            // must confirm >18
+            const ageYes = document.querySelector('input[name="over18"][value="yes"]');
+            if (!ageYes || !ageYes.checked) {
+                alert('Vous devez confirmer être majeur(e) (plus de 18 ans) pour continuer.');
+                return;
+            }
+
+            const form = this;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Envoi...';
+
+            const fd = new FormData(form);
+            // add some helpful fields for the mail
+            fd.append('_subject', `CONFIDENTIEL : Les vérités crades de L'Heure des Non Dits`);
+            fd.append('_cc', 'hndformulaire@gmail.com');
+
+            fetch(form.action, {
+                method: 'POST',
+                body: fd,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            }).then(response => {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Valider';
+                if (response.ok) {
+                    form.classList.add('hidden');
+                    document.getElementById('resultsSection').classList.remove('hidden');
+                    window.scrollTo(0,0);
+                } else {
+                    response.json().then(json => {
+                        alert('Erreur lors de l\'envoi : ' + (json.error || 'Veuillez réessayer.'));
+                    }).catch(()=> alert('Erreur lors de l\'envoi.'));
+                }
+            }).catch(err => {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Valider';
+                alert('Échec de l\'envoi : ' + err.message);
+            });
         });
 
-        function sendViaMailto() {
-            const name = document.getElementById('userName').value;
-            const partner = document.getElementById('partnerEmail').value;
-            let body = `Rapport de l'Abysse Intime - Envoyé par ${name}\n`;
-            body += `==============================================\n\n`;
-            
-            const form = document.getElementById('quizForm');
-            questions.forEach((q, i) => {
-                let ans = "";
-                if (q.type === 'checklist') {
-                    ans = Array.from(form.querySelectorAll(`input[name="${q.id}"]:checked`)).map(el => el.value).join(', ') || "Aucun";
-                } else if (q.type === 'range') {
-                    const val = form.querySelector(`input[name="${q.id}"]`).value;
-                    ans = (q.id === 'q29' && val === "60") ? "60+min" : val + (q.unit || "");
-                } else {
-                    ans = new FormData(form).get(q.id) || "Pas de réponse";
-                }
-                
-                const env = document.getElementById(`envisageable_${q.id}`)?.innerText || "";
-                body += `${q.type === 'checklist' ? 'CHECKLIST' : i+1}. ${q.text}\n   RÉPONSE: ${ans} ${env}\n\n`;
-            });
-
-            window.location.href = `mailto:${partner}?subject=CONFIDENTIEL : Les vérités crades de ${name}&body=${encodeURIComponent(body)}`;
-        }
+        // small helper in results to let user go back
+        document.getElementById('openMailBtn').addEventListener('click', () => location.reload());
     </script>
 </body>
 </html>
