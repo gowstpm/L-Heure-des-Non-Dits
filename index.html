@@ -75,28 +75,88 @@
             overflow-y: auto;
         }
 
-        input[type=range] {
-            -webkit-appearance: none;
-            width: 100%;
-            background: transparent;
-        }
+        /* ===== RANGE SLIDER FIX COMPLET ===== */
 
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.1);
+input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 5px;
+    background: rgba(255,255,255,0.1);
+    outline: none;
+    cursor: pointer;
+}
+
+/* ===== WEBKIT (Chrome, Edge, Safari) ===== */
+
+input[type=range]::-webkit-slider-runnable-track {
+    height: 8px;
+    border-radius: 5px;
+    background: transparent;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #ef4444;
+    border: 2px solid #ffffff;
+    cursor: pointer;
+    margin-top: -7px;
+    box-shadow: 0 0 12px rgba(239,68,68,0.7);
+    position: relative;
+    z-index: 2;
+}
+
+/* Neutral thumb for specific ranges (q29, q30) */
+.neutral-range::-webkit-slider-thumb {
+    background: #6b7280; /* zinc-500 */
+    box-shadow: 0 0 8px rgba(107,114,128,0.5);
+}
+
+
+/* ===== FIREFOX ===== */
+
+input[type=range]::-moz-range-track {
+    height: 8px;
+    border-radius: 5px;
+    background: rgba(255,255,255,0.1);
+}
+
+input[type=range]::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #ef4444;
+    border: 2px solid #ffffff;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(239,68,68,0.7);
+}
+
+/* Neutral thumb for specific ranges (q29, q30) on Firefox */
+.neutral-range::-moz-range-thumb {
+    background: #6b7280; /* zinc-500 */
+    box-shadow: 0 0 8px rgba(107,114,128,0.5);
+}
+
+
+
+        /* IE fallback (if needed) */
+        input[type=range]::-ms-fill-lower {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+        }
+        input[type=range]::-ms-fill-upper {
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 4px;
         }
 
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 24px;
-            width: 24px;
-            border-radius: 50%;
-            background: #ef4444;
-            cursor: pointer;
-            margin-top: -8px;
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        /* Focus outline */
+        input[type=range]:focus {
+            outline: none;
         }
     </style>
 </head>
@@ -126,8 +186,9 @@
 
             <div id="questionsContainer" class="space-y-6"></div>
 
-            <div class="text-center mt-10">
-                <button type="submit" id="submitButton" class="bg-red-800 hover:bg-red-700 text-white font-bold py-5 px-14 rounded-full transition-all shadow-[0_0_30px_rgba(153,27,27,0.4)] uppercase">Valider</button>
+                <div class="text-center mt-10 flex flex-col md:flex-row justify-center gap-4 items-center">
+                <button type="submit" id="submitButton" class="bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-5 px-14 rounded-full transition-all uppercase">Valider</button>
+                <button type="button" id="downloadButton" class="bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-4 px-10 rounded-full transition-all uppercase">Télécharger mes réponses</button>
             </div>
 
             <!-- Hidden fields for Formspree (subject, cc). _cc may or may not be used depending on your Formspree plan. -->
@@ -139,7 +200,7 @@
         <div id="resultsSection" class="hidden glass-card p-10 text-center">
             <h2 class="text-3xl font-bold text-red-600 mb-4 uppercase">Le dossier est prêt</h2>
             <p class="mb-8 text-gray-300">Tes vérités sont enregistrées. Prêt(e) à ce qu'il/elle lise tout ça ?</p>
-            <button id="openMailBtn" class="bg-red-900 p-4 rounded-lg text-white font-bold hover:bg-red-800 transition-colors">Ouvrir la boîte ou revenir à la page</button>
+            <button id="openMailBtn" class="bg-zinc-800 p-4 rounded-lg text-white font-bold hover:bg-zinc-700 transition-colors">Ouvrir la boîte ou revenir à la page</button>
         </div>
     </div>
 
@@ -196,8 +257,8 @@
             <h3 class="text-xl font-bold text-red-500 mb-4">MAIS... c'est envisageable ??</h3>
             <p class="text-gray-400 mb-6 italic" id="modalContext"></p>
             <div class="flex gap-4 justify-center">
-                <button onclick="handleModalResponse('Oui, pourquoi pas')" class="bg-red-700 px-6 py-2 rounded font-bold hover:bg-red-600">OUI</button>
-                <button onclick="handleModalResponse('Non, jamais')" class="bg-zinc-800 px-6 py-2 rounded font-bold hover:bg-zinc-700">NON</button>
+                <button id="envisageableYesBtn" class="bg-red-700 px-6 py-2 rounded font-bold hover:bg-red-600">OUI</button>
+                <button id="envisageableNoBtn" class="bg-zinc-800 px-6 py-2 rounded font-bold hover:bg-zinc-700">NON</button>
             </div>
         </div>
     </div>
@@ -211,7 +272,7 @@
     </div>
 
     <script>
-        // questions list unchanged; we'll generate "name" attributes automatically as readable slugs
+        // questions list modified per request: removed old q12 and q17, replaced q12 by BDSM question.
         const questions = [
             { id: 'q1', type: 'scale', text: "As-tu déjà utiliser le pied de ton/ta partenaire dans une baise ?" },
             { id: 'q2', type: 'scale', text: "T'es-tu déjà envoyé dans des chiottes, un parking ou tous types de lieux public ?" },
@@ -224,13 +285,14 @@
             { id: 'q9', type: 'scale', text: "T'es-tu déjà fait ligoter comme une bête ?" },
             { id: 'q10', type: 'scale', text: "As-tu déjà kiffé recevoir des gifles/bifles de forrain pendant la baise ?" },
             { id: 'q11', type: 'scale', text: "As-tu déjà pris ou causé des vraies fessées ?", hasFollowUp: 'fessées' },
-            { id: 'q12', type: 'scale', text: "As-tu déjà torturé ton/ta partenaire ?", hasFollowUp: 'torture' },
+            // replaced old q12 with BDSM question
+            { id: 'q12', type: 'scale', text: "Avez-vous déjà pratiqué du BDSM (ou un truc dans le genre) ?", hasFollowUp: 'torture' },
             { id: 'q13', type: 'scale', text: "As-tu déjà baisé comme un porc sur un balcony en espérant être vu par autrui ?" },
             { id: 'q14', type: 'scale', text: "As-tu déjà bandé/mouillé en imaginant ton/ta partenaire baiser avec un/une autre ?" },
             { id: 'q15', type: 'scale', text: "As-tu déjà voulu te taper un plan à trois (ou plus) avec une/un totale inconnue ?", hasFollowUp: 'plan_trois' },
             { id: 'section_beuteu', type: 'checklist', text: "Lieux de pénétration (cocher tout ce qui a déjà accueilli une beuteu dans vos baises) :", options: ["Vagin", "Anus", "Bouche", "Main", "Entre les seins", "Entre les cuisses", "Pieds", "Aisselles", "Oreille (sérieux ?)", "Nombril"] },
             { id: 'q16', type: 'scale', text: "As-tu déjà eu envie d'être traité(e) comme une chienne / un esclave (collier, laisse, ordres) ?" },
-            { id: 'q17', type: 'scale', text: "As-tu déjà ejaculé sans prevenir comme un detraqué ? Homme uniquement"},
+            // q17 removed as requested
             { id: 'q18', type: 'scale', text: "As-tu déjà voulu simuler un viol, avec de la vraie résistance et de la brutalité ?" },
             { id: 'q19', type: 'scale', text: "As-tu déjà eu envie de te faire pisser dessus ou de m'arroser la gueule ?" },
             { id: 'q20', type: 'binary', text: "La pisse ?", options: ["Répugnant", "Avec plaisir"], hasFollowUp: 'pisse_flow' },
@@ -249,9 +311,13 @@
         const scaleOptions = ["Oui, mais c'était nul à chier", "Oui, et régulièrement", "Oui, une fois", "Non"];
         const container = document.getElementById('questionsContainer');
         let currentModalQuestionId = null;
+        let currentModalFollowUpType = null;
         let selectedLiquide = null;
         let selectedPisseMode = null;
         let selectedMerdeMode = null;
+
+        // mapping qId -> fieldName (slug) to be able to create hidden fields consistently
+        const questionFieldNames = {};
 
         // helper to convert question text to a readable slug for form field names
         function slugify(text) {
@@ -262,6 +328,19 @@
                 .slice(0, 60);
         }
 
+        // helper to create/update hidden inputs inside the form so followups and extra notes are submitted to Formspree
+        function setHiddenField(name, value) {
+            const form = document.getElementById('quizForm');
+            let input = form.querySelector(`input[name="${name}"]`);
+            if (!input) {
+                input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = name;
+                form.appendChild(input);
+            }
+            input.value = value;
+        }
+
         questions.forEach((q, i) => {
             const card = document.createElement('div');
             card.className = "glass-card p-6 border-l-4 border-red-900 transition-all duration-300 hover:border-red-600";
@@ -269,8 +348,9 @@
             const numberLabel = q.type === 'checklist' ? '<i class="fa-solid fa-check-double text-red-600 mr-2"></i>' : `${i+1}. `;
             let html = `<p class="text-lg font-bold mb-4 text-gray-100">${numberLabel}${q.text}</p>`;
 
-            // compute a friendly name for Formspree
+            // compute a friendly name for Formspree and store mapping
             const fieldName = slugify(q.text || q.id);
+            questionFieldNames[q.id] = fieldName;
 
             if (q.type === 'scale' || q.type === 'binary') {
                 const opts = q.type === 'binary' ? q.options : scaleOptions;
@@ -289,16 +369,18 @@
                 const max = q.rangeMax || 100;
                 const unit = q.unit || '';
                 const initial = Math.round((max + min) / 2);
+                // keep red label only for other ranges; make q29 (durée) and q30 (satisfaction globale) neutral
+                const labelClass = (q.id === 'q29' || q.id === 'q30') ? 'text-gray-300 font-bold' : 'text-red-500 font-bold';
                 
                 html += `
                 <div class="px-4">
-                    <input type="range" name="${fieldName}" id="range_${q.id}" min="${min}" max="${max}" value="${initial}" oninput="updateRangeLabel('${q.id}', this.value, '${unit}')" onchange="checkRangeFollowUp('${q.id}', this.value, '${q.hasFollowUp || ''}')">
+                    <input class="${(q.id === 'q29' || q.id === 'q30') ? 'neutral-range' : ''}" type="range" name="${fieldName}" id="range_${q.id}" min="${min}" max="${max}" value="${initial}" oninput="updateRangeLabel('${q.id}', this.value, '${unit}')" onchange="checkRangeFollowUp('${q.id}', this.value, '${q.hasFollowUp || ''}')">
                     <div class="flex justify-between mt-2 text-sm text-gray-400">
                         <span>Min</span>
-                        <span id="label_${q.id}" class="text-red-500 font-bold">${initial}${unit}</span>
+                        <span id="label_${q.id}" class="${labelClass}">${initial}${unit}</span>
                         <span>Max</span>
                     </div>
-                </div><div id="envisageable_${q.id}" class="mt-2 text-xs text-red-500 font-bold uppercase tracking-widest italic"></div>`;
+                </div><div id="envisageable_${q.id}" class="mt-2 text-red-500 font-bold uppercase tracking-widest italic text-xs"></div>`;
             } else if (q.type === 'checklist') {
                 html += `<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">`;
                 q.options.forEach(opt => {
@@ -315,14 +397,30 @@
         });
 
         function updateRangeLabel(id, val, unit) {
-            let displayVal = val;
-            if (id === 'q29' && parseInt(val) === 60) {
-                displayVal = "60+";
-            }
-            document.getElementById(`label_${id}`).innerText = displayVal + unit;
-        }
+    const range = document.getElementById(`range_${id}`);
+    const min = range.min ? parseInt(range.min) : 0;
+    const max = range.max ? parseInt(range.max) : 100;
+
+    let displayVal = val;
+    if (id === 'q29' && parseInt(val) === 60) {
+        displayVal = "60+";
+    }
+
+    document.getElementById(`label_${id}`).innerText = displayVal + unit;
+
+    /* ===== Remplissage dynamique visuel ===== */
+    const percent = ((val - min) / (max - min)) * 100;
+    const accent = (id === 'q29' || id === 'q30') ? '#6b7280' : '#ef4444';
+    range.style.background = `linear-gradient(to right, ${accent} ${percent}%, rgba(255,255,255,0.1) ${percent}%)`;
+
+    const fieldName = questionFieldNames[id];
+    if (fieldName) setHiddenField(fieldName, displayVal + unit);
+}
+
 
         function checkRangeFollowUp(id, val, followUpType) {
+            const fieldName = questionFieldNames[id];
+            if (fieldName) setHiddenField(fieldName, val);
             if (followUpType === 'duree' && parseInt(val) < 10) {
                 showFollowUp(id, 'duree_feedback');
             } else if (followUpType === 'satisfaction' && parseInt(val) < 50) {
@@ -330,20 +428,38 @@
             }
         }
 
+        // handleAnswerChange now stores the selected answer as a hidden field and opens the envisageable modal when needed
         function handleAnswerChange(input, qId, followUpType) {
+            const fieldName = questionFieldNames[qId];
+            if (fieldName) setHiddenField(fieldName, input.value);
+
+            // store followUpType so that if user answers "OUI" in the envisageable modal we can show the same followups
+            currentModalQuestionId = qId;
+            currentModalFollowUpType = followUpType || null;
+
+            // show envisageable modal for certain negative values AND also allow existing behavior (some questions may want to ask "mais c'est envisageable?")
             if (input.value === "Non" || input.value === "Répugnant" || input.value === "Hors de question, trop dangereux") {
-                currentModalQuestionId = qId;
                 const qText = questions.find(q => q.id === qId).text;
                 document.getElementById('modalContext').innerText = qText;
                 document.getElementById('envisageableModal').style.display = 'flex';
                 document.getElementById(`envisageable_${qId}`).innerText = "";
+                // ensure hidden 'envisageable' is initialized
+                if (fieldName) setHiddenField(`${fieldName}_envisageable`, '');
             } else {
+                // positive answers: clear the envisageable text and directly open followup if any
                 document.getElementById(`envisageable_${qId}`).innerText = "";
                 if (followUpType) {
                     showFollowUp(qId, followUpType);
+                } else {
+                    // ensure followup hidden cleared if none
+                    if (fieldName) setHiddenField(`${fieldName}_followup`, '');
                 }
             }
         }
+
+        // hookup the envisageable modal buttons
+        document.getElementById('envisageableYesBtn').addEventListener('click', () => handleModalResponse('Oui'));
+        document.getElementById('envisageableNoBtn').addEventListener('click', () => handleModalResponse('Non'));
 
         function showFollowUp(qId, type) {
             const content = document.getElementById('followUpContent');
@@ -505,19 +621,33 @@
 
         function handleModalResponse(val) {
             if (currentModalQuestionId) {
-                document.getElementById(`envisageable_${currentModalQuestionId}`).innerText = `[ENVISAGEABLE : ${val.toUpperCase()}]`;
+                const labelEl = document.getElementById(`envisageable_${currentModalQuestionId}`);
+                labelEl.innerText = `[ENVISAGEABLE : ${val.toUpperCase()}]`;
                 document.getElementById('envisageableModal').style.display = 'none';
+
+                // store this in a hidden field for Formspree
+                const fieldName = questionFieldNames[currentModalQuestionId];
+                if (fieldName) setHiddenField(`${fieldName}_envisageable`, val);
+
+                // If the user answered "Oui" to "MAIS... c'est envisageable ??", and there's a followUpType, open the same followup flow
+                if (val === 'Oui' && currentModalFollowUpType) {
+                    // small timeout so that modal closes visually before followup opens
+                    setTimeout(() => showFollowUp(currentModalQuestionId, currentModalFollowUpType), 250);
+                }
             }
         }
 
         function closeFollowUp(type) {
             const label = document.getElementById(`envisageable_${currentModalQuestionId}`);
+            const fieldName = questionFieldNames[currentModalQuestionId];
 
             if (type === 'crachat') {
                 let followVal = document.querySelector(`input[name="follow_${currentModalQuestionId}"]:checked`)?.value || 
                                  document.getElementById('customCrachat')?.value || "";
                 selectedLiquide = followVal;
-                label.innerText = `[LIQUIDE : ${followVal.toUpperCase()}]`;
+                const text = `[LIQUIDE : ${followVal.toUpperCase()}]`;
+                if (label) label.innerText = text;
+                if (fieldName) setHiddenField(`${fieldName}_followup`, text);
                 document.getElementById('followUpModal').style.display = 'none';
                 setTimeout(() => showFollowUp(currentModalQuestionId, 'crachat_cible'), 300);
                 return;
@@ -527,71 +657,102 @@
                 if (selectedLiquide === "Les deux") {
                     const baveTargets = Array.from(document.querySelectorAll(`input[name="target_bave_${currentModalQuestionId}"]:checked`)).map(el => el.value).join(', ');
                     const spermeTargets = Array.from(document.querySelectorAll(`input[name="target_sperme_${currentModalQuestionId}"]:checked`)).map(el => el.value).join(', ');
-                    label.innerText += ` | CIBLES BAVE : ${baveTargets || 'Aucune'} | CIBLES SPERME : ${spermeTargets || 'Aucune'}`;
+                    const appended = ` | CIBLES BAVE : ${baveTargets || 'Aucune'} | CIBLES SPERME : ${spermeTargets || 'Aucune'}`;
+                    if (label) label.innerText += appended;
+                    if (fieldName) setHiddenField(`${fieldName}_followup`, (label ? label.innerText : '') + appended);
                 } else {
                     const targets = Array.from(document.querySelectorAll(`input[name="target_unique_${currentModalQuestionId}"]:checked`)).map(el => el.value).join(', ');
-                    label.innerText += ` | CIBLES : ${targets || 'Aucune'}`;
+                    const appended = ` | CIBLES : ${targets || 'Aucune'}`;
+                    if (label) label.innerText += appended;
+                    if (fieldName) setHiddenField(`${fieldName}_followup`, (label ? label.innerText : '') + appended);
                 }
             } else if (type === 'pisse_flow') {
                 selectedPisseMode = document.querySelector(`input[name="mode_${currentModalQuestionId}"]:checked`)?.value;
-                label.innerText = `[MODE : ${selectedPisseMode ? selectedPisseMode.toUpperCase() : 'NON SPECIFIÉ'}]`;
+                const text = `[MODE : ${selectedPisseMode ? selectedPisseMode.toUpperCase() : 'NON SPECIFIÉ'}]`;
+                if (label) label.innerText = text;
+                if (fieldName) setHiddenField(`${fieldName}_followup`, text);
                 document.getElementById('followUpModal').style.display = 'none';
                 setTimeout(() => showFollowUp(currentModalQuestionId, 'pisse_cible'), 300);
                 return;
             } else if (type === 'merde_flow') {
                 selectedMerdeMode = document.querySelector(`input[name="mode_${currentModalQuestionId}"]:checked`)?.value;
-                label.innerText = `[MODE : ${selectedMerdeMode ? selectedMerdeMode.toUpperCase() : 'NON SPECIFIÉ'}]`;
+                const text = `[MODE : ${selectedMerdeMode ? selectedMerdeMode.toUpperCase() : 'NON SPECIFIÉ'}]`;
+                if (label) label.innerText = text;
+                if (fieldName) setHiddenField(`${fieldName}_followup`, text);
                 document.getElementById('followUpModal').style.display = 'none';
                 setTimeout(() => showFollowUp(currentModalQuestionId, 'merde_cible'), 300);
                 return;
             } else if (type === 'pisse_cible') {
                 let showAvaler = false;
+                let appended = '';
                 if (selectedPisseMode === "Les deux") {
                     const recu = Array.from(document.querySelectorAll(`input[name="pisse_recu_${currentModalQuestionId}"]:checked`)).map(el => el.value);
                     const envoye = Array.from(document.querySelectorAll(`input[name="pisse_envoye_${currentModalQuestionId}"]:checked`)).map(el => el.value);
-                    label.innerText += ` | CIBLES REÇU : ${recu.join(', ') || 'Aucune'} | CIBLES ENVOYÉ : ${envoye.join(', ') || 'Aucune'}`;
+                    appended = ` | CIBLES REÇU : ${recu.join(', ') || 'Aucune'} | CIBLES ENVOÉ : ${envoye.join(', ') || 'Aucune'}`;
                     if (recu.includes("Bouche") || envoye.includes("Bouche")) showAvaler = true;
                 } else {
                     const targets = Array.from(document.querySelectorAll(`input[name="pisse_unique_${currentModalQuestionId}"]:checked`)).map(el => el.value);
-                    label.innerText += ` | CIBLES : ${targets.join(', ') || 'Aucune'}`;
+                    appended = ` | CIBLES : ${targets.join(', ') || 'Aucune'}`;
                     if (targets.includes("Bouche")) showAvaler = true;
                 }
+                if (label) label.innerText += appended;
+                if (fieldName) setHiddenField(`${fieldName}_followup`, (label ? label.innerText : '') + appended);
                 document.getElementById('followUpModal').style.display = 'none';
                 if (showAvaler) setTimeout(() => showFollowUp(currentModalQuestionId, 'pisse_avale'), 300);
                 return;
             } else if (type === 'merde_cible') {
                 let showAvaler = false;
+                let appended = '';
                 if (selectedMerdeMode === "Les deux") {
                     const recu = Array.from(document.querySelectorAll(`input[name="merde_recu_${currentModalQuestionId}"]:checked`)).map(el => el.value);
                     const envoye = Array.from(document.querySelectorAll(`input[name="merde_envoye_${currentModalQuestionId}"]:checked`)).map(el => el.value);
-                    label.innerText += ` | CIBLES REÇU : ${recu.join(', ') || 'Aucune'} | CIBLES ENVOYÉ : ${envoye.join(', ') || 'Aucune'}`;
+                    appended = ` | CIBLES REÇU : ${recu.join(', ') || 'Aucune'} | CIBLES ENVOÉ : ${envoye.join(', ') || 'Aucune'}`;
                     if (recu.includes("Bouche") || envoye.includes("Bouche")) showAvaler = true;
                 } else {
                     const targets = Array.from(document.querySelectorAll(`input[name="merde_unique_${currentModalQuestionId}"]:checked`)).map(el => el.value);
-                    label.innerText += ` | CIBLES : ${targets.join(', ') || 'Aucune'}`;
+                    appended = ` | CIBLES : ${targets.join(', ') || 'Aucune'}`;
                     if (targets.includes("Bouche")) showAvaler = true;
                 }
+                if (label) label.innerText += appended;
+                if (fieldName) setHiddenField(`${fieldName}_followup`, (label ? label.innerText : '') + appended);
                 document.getElementById('followUpModal').style.display = 'none';
                 if (showAvaler) setTimeout(() => showFollowUp(currentModalQuestionId, 'merde_avale'), 300);
                 return;
             } else if (type === 'pisse_avale' || type === 'merde_avale') {
                 const finalAction = document.querySelector(`input[name="final_action_${currentModalQuestionId}"]:checked`)?.value;
-                label.innerText += ` | ACTION : ${finalAction || 'Non précisé'}`;
+                const appended = ` | ACTION : ${finalAction || 'Non précisé'}`;
+                if (label) label.innerText += appended;
+                if (fieldName) setHiddenField(`${fieldName}_followup`, (label ? label.innerText : '') + appended);
             } else if (type === 'fist_flow') {
                 const targets = Array.from(document.querySelectorAll(`input[name="fist_target_${currentModalQuestionId}"]:checked`)).map(el => el.value);
-                label.innerText = `[ORIFICE(S) : ${targets.join(', ') || 'Aucun'}]`;
+                const text = `[ORIFICE(S) : ${targets.join(', ') || 'Aucun'}]`;
+                if (label) label.innerText = text;
+                if (fieldName) setHiddenField(`${fieldName}_followup`, text);
             } else if (type === 'duree_feedback') {
                 const followVal = document.querySelector(`input[name="follow_${currentModalQuestionId}"]:checked`)?.value || "Non précisé";
-                label.innerText = `[RETOUR : ${followVal.toUpperCase()}]`;
+                const text = `[RETOUR : ${followVal.toUpperCase()}]`;
+                if (label) label.innerText = text;
+                if (fieldName) setHiddenField(`${fieldName}_followup`, text);
             } else if (type === 'tromperie') {
-                label.innerText = `[CONSEIL : TROMPERIE CONSEILLÉE]`;
+                const text = `[CONSEIL : TROMPERIE CONSEILLÉE]`;
+                if (label) label.innerText = text;
+                if (fieldName) setHiddenField(`${fieldName}_followup`, text);
             } else if (type === 'plan_trois') {
                 const nb = document.getElementById('nbParticipants').value || 3;
-                label.innerText = `[NB PARTICIPANTS MAX : ${nb}]`;
+                const text = `[NB PARTICIPANTS MAX : ${nb}]`;
+                if (label) label.innerText = text;
+                if (fieldName) setHiddenField(`${fieldName}_followup`, text);
             } else {
                 let followVal = document.querySelector(`input[name="follow_${currentModalQuestionId}"]:checked`)?.value || 
                                  document.getElementById('tortureScale')?.value || "";
-                if (followVal) label.innerText = `[PRÉCISION : ${followVal}]`;
+                if (followVal) {
+                    const text = `[PRÉCISION : ${followVal}]`;
+                    if (label) label.innerText = text;
+                    if (fieldName) setHiddenField(`${fieldName}_followup`, text);
+                } else {
+                    // ensure followup key exists (empty) so it's clear in submission/download
+                    if (fieldName) setHiddenField(`${fieldName}_followup`, '');
+                }
             }
 
             document.getElementById('followUpModal').style.display = 'none';
@@ -630,11 +791,7 @@
                 document.getElementById('quizForm').classList.add('hidden');
             });
 
-            document.getElementById('sexeContinue').addEventListener('click', () => {
-                const chosen = document.querySelector('input[name="arrival_sex"]:checked')?.value || 'prefere_pas_dire';
-                document.getElementById('sexeHidden').value = chosen;
-                document.getElementById('sexeModal').style.display = 'none';
-            });
+            // Note: buttons in sexeModal call setSexe directly; the old listener for a non-existent element was left unchanged per request.
         });
 
         // submit: validate age hidden field then POST to Formspree via fetch so the page doesn't redirect
@@ -647,6 +804,13 @@
                 alert('Vous devez confirmer être majeur(e) (plus de 18 ans) pour continuer.');
                 return;
             }
+
+            // before sending, ensure all current visible "envisageable" text states are saved as hidden fields
+            Object.keys(questionFieldNames).forEach(qid => {
+                const fieldName = questionFieldNames[qid];
+                const labelText = document.getElementById(`envisageable_${qid}`)?.innerText || '';
+                if (fieldName) setHiddenField(`${fieldName}_envisageable`, labelText);
+            });
 
             const form = this;
             const submitBtn = document.getElementById('submitButton');
@@ -686,10 +850,118 @@
         // small helper in results to let user go back
         document.getElementById('openMailBtn').addEventListener('click', () => location.reload());
 
-function setSexe(value) {
-    document.getElementById('sexeHidden').value = value;
-    document.getElementById('sexeModal').style.display = 'none';
-}
+        function setSexe(value) {
+            document.getElementById('sexeHidden').value = value;
+            document.getElementById('sexeModal').style.display = 'none';
+        }
+
+        // Download current responses as IMAGE (PNG)
+        document.getElementById('downloadButton').addEventListener('click', downloadResponses);
+
+        function downloadResponses() {
+            const form = document.getElementById('quizForm');
+            // ensure current "envisageable" labels are saved
+            Object.keys(questionFieldNames).forEach(qid => {
+                const fieldName = questionFieldNames[qid];
+                const labelText = document.getElementById(`envisageable_${qid}`)?.innerText || '';
+                if (fieldName) setHiddenField(`${fieldName}_envisageable`, labelText);
+            });
+
+            const fd = new FormData(form);
+            const obj = {};
+            for (const [k, v] of fd.entries()) {
+                // handle multiple-values keys (checkboxes): gather them into arrays
+                if (obj.hasOwnProperty(k)) {
+                    if (Array.isArray(obj[k])) {
+                        obj[k].push(v);
+                    } else {
+                        obj[k] = [obj[k], v];
+                    }
+                } else {
+                    obj[k] = v;
+                }
+            }
+
+            // Prepare text: pretty JSON
+            const pretty = JSON.stringify(obj, null, 2);
+
+            // Create canvas, wrap text to a fixed width
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // visual parameters
+            const padding = 40;
+            const contentWidth = 1000; // inner width for text
+            const maxWidth = contentWidth;
+            const headerHeight = 80;
+            const lineHeight = 24;
+            const fontSize = 18;
+            ctx.font = `${fontSize}px Poppins, sans-serif`;
+
+            // helper to wrap a single paragraph/line
+            function wrapLine(ctx, text, maxWidth) {
+                const words = text.split(' ');
+                const lines = [];
+                let line = '';
+                for (let n = 0; n < words.length; n++) {
+                    const testLine = line ? (line + ' ' + words[n]) : words[n];
+                    const metrics = ctx.measureText(testLine);
+                    if (metrics.width > maxWidth && line) {
+                        lines.push(line);
+                        line = words[n];
+                    } else {
+                        line = testLine;
+                    }
+                }
+                if (line) lines.push(line);
+                return lines;
+            }
+
+            // break the JSON into lines and wrap each
+            const rawLines = pretty.split('\n');
+            let wrappedLines = [];
+            rawLines.forEach(l => {
+                const w = wrapLine(ctx, l, maxWidth);
+                wrappedLines = wrappedLines.concat(w);
+            });
+
+            const canvasWidth = contentWidth + padding * 2;
+            const canvasHeight = padding * 2 + headerHeight + wrappedLines.length * lineHeight;
+
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+
+            // draw background
+            ctx.fillStyle = '#0a0212';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // header
+            ctx.fillStyle = '#9d174d';
+            ctx.fillRect(padding - 10, padding - 10, canvas.width - (padding - 10) * 2, headerHeight - 10);
+            ctx.fillStyle = '#fff';
+            ctx.font = `700 24px Playfair Display, serif`;
+            ctx.fillText("Réponses — L'Heure des Non Dits", padding + 10, padding + 30);
+            ctx.font = `${fontSize}px Poppins, sans-serif`;
+            ctx.fillStyle = '#eae6f2';
+            ctx.textBaseline = 'top';
+
+            // draw text lines
+            let y = padding + headerHeight;
+            const startX = padding + 10;
+            for (let i = 0; i < wrappedLines.length; i++) {
+                const line = wrappedLines[i];
+                ctx.fillText(line, startX, y + i * lineHeight);
+            }
+
+            // export to PNG and download
+            const dataURL = canvas.toDataURL('image/png');
+            const a = document.createElement('a');
+            a.href = dataURL;
+            a.download = 'reponses_hnd.png';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        }
     </script>
 </body>
 </html>
